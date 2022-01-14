@@ -20,6 +20,23 @@
     color: #102336;
 }
 
+/*.primaryButton {*/
+    /*background-color: #102336;*/
+    /*border-color: #102336;*/
+/*}*/
+
+/*.primaryButton:hover {*/
+    /*!*#5D88BB;*!*/
+    /*background-color: #D6D6D6;*/
+    /*border-color: #102336;*/
+    /*color: #102336;*/
+/*}*/
+
+/*.secondaryButton:hover {*/
+    /*background-color: #D6D6D6;*/
+    /*color: #102336;*/
+/*}*/
+
 .App-header {
     background-color: #B3CBE4;
     border-color: #102336;

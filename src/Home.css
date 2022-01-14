@@ -21,3 +21,25 @@
     font-style: italic;
     font-size: 14px;
 }
+
+.primaryButton {
+    background-color: #102336;
+    border-color: #102336;
+}
+
+.primaryButton:hover {
+    background-color: #D6D6D6;
+    border-color: #102336;
+    color: #102336;
+}
+
+.primaryButton:active, .primaryButton:focus {
+    background-color: #5D88BB;
+    border-color: #102336;
+    color: white;
+}
+
+.secondaryButton:hover {
+    background-color: #D6D6D6;
+    color: #102336;
+}

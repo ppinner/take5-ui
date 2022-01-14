@@ -7,6 +7,8 @@ import Header from "./Header";
 import LogActivityModal from "./LogActivityModal";
 import Footer from "./Footer";
 import Home from "./Home";
+import Profile from "./Profile";
+import Login from "./Login";
 
 function Page() {
     return (
@@ -15,6 +17,8 @@ function Page() {
 
             {/*page content options*/}
             <Home />
+            {/*<Profile />*/}
+            {/*<Login />     - TODO - needs a separate page route*/}
 
             {/*modals*/}
             <LogActivityModal/>

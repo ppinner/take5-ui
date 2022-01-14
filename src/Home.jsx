@@ -44,7 +44,7 @@ function Home() {
                 </Col>
                 <Col xs={1}/>
             </Row>
-            <Row>
+            <Row className="mt-2">
                 <Col/>
                 <Col xs={6}>
                     <RadarChart captions={captions}
@@ -54,8 +54,8 @@ function Home() {
                 </Col>
                 <Col xs={4} className="p-3 mt-5">
                     <Row className="px-5">
-                        <Button className="my-1 px-2" variant="primary" onClick={() => setShowActivityModal(true)}>Log an Activity</Button>
-                        <Button className="my-1" variant="outline-secondary">View Goal Progress</Button>
+                        <Button className="my-1 px-2 primaryButton" variant="primary" onClick={() => setShowActivityModal(true)}>Log an Activity</Button>
+                        <Button className="my-1 secondaryButton" variant="outline-secondary">View Goal Progress</Button>
                     </Row>
                     <Row className="recommendationSection mt-5">
                         <h4>Recommended for you...</h4>
