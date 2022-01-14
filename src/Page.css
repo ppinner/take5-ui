@@ -1,0 +1,56 @@
+/*@media (prefers-reduced-motion: no-preference) {*/
+    /*.App-logo {*/
+        /*animation: App-logo-spin infinite 20s linear;*/
+    /*}*/
+/*}*/
+
+#profileBtn {
+    border-radius: 30px;
+    padding: 3px;
+    margin-top: 5px;
+    border-color: #102336;
+    color: #102336;
+}
+
+#actions-dropdown {
+    border-radius: 30px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    border-color: #102336;
+    color: #102336;
+}
+
+.App-header {
+    background-color: #B3CBE4;
+    border-color: #102336;
+    min-height: 10vh;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: end;
+    font-size: calc(10px + 2vmin);
+    color: white;
+    margin-bottom: 30px;
+    border-bottom: #5D88BB;
+}
+
+.logo {
+    /*Ratio 90:150*/
+    height: 90px;
+    width: 150px;
+}
+
+.footer {
+    background-color: #B3CBE4;
+    min-height: 5vh;
+    /*border-color: #D6D6D6;*/
+}
+
+.footer-button {
+    background-color: transparent;
+    border: none !important;
+    border-color: #102336;
+    color: #102336;
+    /*Middle button set to have borders/divider?*/
+}
+

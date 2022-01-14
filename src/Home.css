@@ -1,0 +1,23 @@
+.Home {
+    text-align: left;
+}
+
+.greeting {
+    margin-top: 30px;
+}
+
+.recommendationSection {
+    text-align: center;
+    align-self: end;
+}
+
+.recommendationCard {
+    border-color: #5D88BB !important;
+    border-width: medium !important;
+    border-radius: 50px !important;
+}
+
+.goals {
+    font-style: italic;
+    font-size: 14px;
+}
