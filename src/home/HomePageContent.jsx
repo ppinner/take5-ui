@@ -6,9 +6,7 @@ import {Container, Row, Col} from 'react-bootstrap';
 import RadarChart from 'react-svg-radar-chart';
 import 'react-svg-radar-chart/build/css/index.css'
 
-function Home() {
-    const [showActivityModal, setShowActivityModal] = useState(false);
-
+function HomePageContent() {
     const data = [
         {
             data: {
@@ -54,7 +52,9 @@ function Home() {
                 </Col>
                 <Col xs={4} className="p-3 mt-5">
                     <Row className="px-5">
-                        <Button className="my-1 px-2 primaryButton" variant="primary" onClick={() => setShowActivityModal(true)}>Log an Activity</Button>
+                        <Button className="my-1 px-2 primaryButton" variant="primary">
+                            Log an Activity
+                        </Button>
                         <Button className="my-1 secondaryButton" variant="outline-secondary">View Goal Progress</Button>
                     </Row>
                     <Row className="recommendationSection mt-5">
@@ -71,4 +71,4 @@ function Home() {
     );
 }
 
-export default Home;
+export default HomePageContent;

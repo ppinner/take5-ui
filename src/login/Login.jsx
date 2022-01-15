@@ -3,10 +3,12 @@ import './Login.css';
 import React from 'react';
 import Button from 'react-bootstrap/Button';
 import {Container, Row, Col} from 'react-bootstrap';
-import logo from "./Take5FullLogoCropped.png";
+import logo from "../Take5FullLogoCropped.png";
 import Image from "react-bootstrap/Image";
 
-function Login() {
+function Login({setIsLoggedIn}) {
+    const login = () => setIsLoggedIn(true)
+
     return (
         <Container className="Login d-flex">
             <Col className="header .flex-grow-1">
@@ -19,7 +21,7 @@ function Login() {
                 <text>Start taking Steps to Wellbeing and see the results!</text>
                 <Container className="mt-4">
                     <Row>
-                        <Button variant="primary" className="primaryButton">Login</Button>
+                        <Button variant="primary" className="primaryButton" onClick={login}>Login</Button>
                     </Row>
                     <Row>
                         <Button variant="outline-secondary" className="secondaryButton mt-2">Sign Up</Button>

@@ -6,7 +6,14 @@ import DropdownButton from "react-bootstrap/DropdownButton";
 import Dropdown from "react-bootstrap/Dropdown";
 import React from "react";
 
-function Header() {
+function Header({showProfile, setShowProfile, setIsLoggedIn, setShowModal}) {
+    const toggleShowProfile = () => setShowProfile(!showProfile);
+    const logout = () => setIsLoggedIn(false);
+    const showModal = () => {
+        console.log("setShowModal to true");
+        setShowModal(true);
+    };
+
     return (
             <Row className="App-header mt-4">
                 <Col>
@@ -15,18 +22,25 @@ function Header() {
                 <Col xs={6}/>
                 <Col>
                     <Row>
-                        <Button as={Col} id="profileBtn" className="my-1 py-1" variant="outline-secondary">Profile</Button>
+                        <Button as={Col}
+                                id="profileBtn"
+                                className="my-1 py-1"
+                                variant="outline-secondary"
+                                onClick={toggleShowProfile}
+                        >
+                            {showProfile ? "Home" : "Profile"}
+                        </Button>
                         <DropdownButton
                             as={Col}
                             variant="outline-secondary"
                             title="Actions"
                             id="actions-dropdown"
                         >
-                            <Dropdown.Item href="#">Log an Activity</Dropdown.Item>
+                            <Dropdown.Item type="button" onClick={showModal}>Log an Activity</Dropdown.Item>
                             <Dropdown.Item href="#">View Goal Progress</Dropdown.Item>
-                            <Dropdown.Item href="#">View Activity</Dropdown.Item>
+                            <Dropdown.Item href="#">View Activity History</Dropdown.Item>
                             <Dropdown.Divider/>
-                            <Dropdown.Item href="#">Logout</Dropdown.Item>
+                            <Dropdown.Item type="button" onClick={logout}>Logout</Dropdown.Item>
                         </DropdownButton>
                     </Row>
                 </Col>

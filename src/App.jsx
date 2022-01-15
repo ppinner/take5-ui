@@ -4,24 +4,24 @@ import {
     Routes,
     Route
 } from "react-router-dom";
-import Login from './Login';
-import Home from './Home';
+import Login from './login/Login';
+import HomePageContent from './home/HomePageContent';
 
 export default function App() {
     return (
         <BrowserRouter>
             <Routes>
                 <Route exact path="/" element={<Login/>}/>
-                {/*<Route path="/profile" element={<Profile/>}/>*/}
-                <Route path="/home" element={<Home/>}/>
+                {/*<Route path="/profile" element={<ProfilePageContent/>}/>*/}
+                <Route path="/home" element={<HomePageContent/>}/>
             </Routes>
         </BrowserRouter>
     );
 }
 
 // const routes = {
-//     "/home": () => <Home />,
-//     // "/profile": () => <Profile />,
+//     "/home": () => <HomePageContent />,
+//     // "/profile": () => <ProfilePageContent />,
 //     "/": () => <Login />
 // };
 //

@@ -1,4 +1,5 @@
 import './Profile.css';
+import '../node_modules/bootstrap/dist/css/bootstrap.css';
 import React, {useState} from 'react';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
@@ -12,7 +13,7 @@ import FormLabel from 'react-bootstrap/FormLabel';
 import Popover from 'react-bootstrap/Popover';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 
-function Profile() {
+function ProfilePageContent() {
     // const [showTooltip, setShowTooltip] = useState(false);
     //
     // const personalityTraits = {
@@ -142,4 +143,4 @@ function Profile() {
     );
 }
 
-export default Profile;
+export default ProfilePageContent;
