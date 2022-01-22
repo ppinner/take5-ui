@@ -1,20 +1,33 @@
 import './Home.css';
-import React, {useState} from 'react';
+import React from 'react';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import {Container, Row, Col} from 'react-bootstrap';
 import RadarChart from 'react-svg-radar-chart';
-import 'react-svg-radar-chart/build/css/index.css'
+import 'react-svg-radar-chart/build/css/index.css';
+import {goals} from "../constants";
 
-function HomePageContent() {
+function HomePageContent({user}) {
+    const responseMessage = (() => {
+        const numActivities = activityCount();
+        let message = "";
+        if(numActivities > 10)
+            message += `Way to go!`;
+        else if(numActivities < 3){
+            message += `Remember to add activities when you complete them!`;
+        }
+        return message
+    });
+
+
     const data = [
         {
             data: {
-                mindfulness: 0.7,
-                connection: 0.8,
-                physicalActivity: 0.9,
-                learning: 0.48,
-                giving: 0.6
+                mindfulness: user.scores.mindfulness,
+                connection: user.scores.connection,
+                physicalActivity: user.scores.physicalActivity,
+                learning: user.scores.learning,
+                giving: user.scores.giving
             },
             meta: {
                 color: '#5D88BB',
@@ -23,13 +36,17 @@ function HomePageContent() {
         }
     ];
 
-    const captions = {
-        // columns
-        mindfulness: 'Mindfulness',
-        connection: 'Connection',
-        physicalActivity: 'Physical Activity',
-        learning: 'Learning',
-        giving: 'Giving'
+    const activityCount = () => {
+        const today = new Date();
+        const weekAgo = new Date(today.getFullYear(), today.getMonth(), today.getDate()-7);
+        let weeklyActivities;
+
+        if(user.activityLog != null) {
+             weeklyActivities = user.activityLog.filter(log => {
+                return weekAgo <= log.date <= today
+            });
+        }
+        return weeklyActivities.length
     };
 
     return (
@@ -37,15 +54,15 @@ function HomePageContent() {
             <Row className="greeting">
                 <Col xs={1}/>
                 <Col>
-                    <h1>Hello, Poppy</h1>
-                    <text>You've tracked <strong>10</strong> activities this week. Way to go!</text>
+                    <h1>Hello, {user.name}</h1>
+                    <text>You've tracked <strong>{activityCount()}</strong> {activityCount() === 1 ? "activity" : "activities"} this week. {responseMessage()}</text>
                 </Col>
                 <Col xs={1}/>
             </Row>
             <Row className="mt-2">
                 <Col/>
                 <Col xs={6}>
-                    <RadarChart captions={captions}
+                    <RadarChart captions={goals}
                                 data={data}
                                 size={400}
                     />

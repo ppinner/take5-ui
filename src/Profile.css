@@ -1,6 +1,6 @@
 .summaryStat {
-    background-color: #102336;
-    border-color: #5D88BB;
+    background-color: #102336 !important;
+    border-color: #5D88BB !important;
     color: white;
     text-align: center;
     margin: 10px;
@@ -13,27 +13,25 @@
 }
 
 .activitySummary {
-    background-color: #D6D6D6;
-    border-color: #5D88BB;
+    background-color: #D6D6D6 !important;
+    border-color: #5D88BB !important;
 }
 
 .personalityResults {
-    background-color: #B3CBE4;
-    border-color: #5D88BB;
-    color: #102336;
+    background-color: #B3CBE4 !important;
+    border-color: #5D88BB !important;
+    color: #102336 !important;
 }
 
 .personalityTrait {
     text-align: center;
-    background-color: transparent;
-    border: transparent;
-    text-align: center;
+    background-color: transparent !important;
+    border: transparent !important;
 }
 
 .personalityTestLink {
     float: right;
     font-style: italic;
     font-size: 10pt;
-    font-decoration: none;
     padding: 0 0 10px 0;
 }

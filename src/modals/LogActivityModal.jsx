@@ -1,57 +1,67 @@
-import Button from "react-bootstrap/Button";
-import React, {useState} from "react";
-import Modal from "react-bootstrap/Modal";
 import '../Page.css';
+import Button from "react-bootstrap/Button";
+import React from "react";
+import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import {Col, Row} from "react-bootstrap";
-import InputGroup from "react-bootstrap/InputGroup";
-import DropdownButton from "react-bootstrap/DropdownButton";
-import Dropdown from "react-bootstrap/Dropdown";
+import Select from 'react-select';
+import {goals} from "../constants";
 
-function LogActivityModal() {
+//TODO - why is this being called repeatedly in a loop?
+const handleClose = () => console.log("close");//setShowModal(false);
+
+function LogActivityModal({show, setShowModal, activities}) {
 
     return (
-        <Modal>
-            <Modal.Header closeButton>
+        <Modal
+            show={show}
+            // onHide={handleClose}
+            backdrop="static"
+            keyboard={false}
+            dialogClassName="modal-80w"
+            centered
+        >
+            <link rel="stylesheet" href="bootstrap-multiselect.css" type="text/css"/>
+            <Modal.Header>
                 <Modal.Title>Log an Activity</Modal.Title>
             </Modal.Header>
 
             <Modal.Body>
                 <Form className="personalInfo">
-                    <p>free text search</p>
-                    <Form.Group as={Row} className="mb-3 align-items-center" controlId="goalInput">
-                        <Form.Label column lg={4}>Primary Goal:</Form.Label>
+                    <Form.Group className="mb-3 align-items-center" controlId="nameInput">
+                        <Form.Control type="text" rows={3} placeholder='Activity Name'/>
+                    </Form.Group>
+                    <Form.Group className="mb-3 align-items-center" controlId="goalInput">
                         <Col>
-                            <InputGroup>
-                                <Form.Control type="text" placeholder='Select a Goal'/>
-                                <DropdownButton
-                                    variant="outline-secondary"
-                                    id="goalDropdown"
-                                    align="end"
-                                    title=""
-                                >
-                                    <Dropdown.Item href="#">Mindfulness</Dropdown.Item>
-                                    <Dropdown.Item href="#">Connection</Dropdown.Item>
-                                    <Dropdown.Item href="#">Learning</Dropdown.Item>
-                                    <Dropdown.Item href="#">Physical Activity</Dropdown.Item>
-                                    <Dropdown.Item href="#">Giving</Dropdown.Item>
-                                </DropdownButton>
-                            </InputGroup>
+                            <Select
+                                placeholder={"Associated goal(s)"}
+                                isMulti
+                                name="goals"
+                                options={
+                                    Object.keys(goals).map(function (key) {
+                                        return {
+                                            value: key, label: goals[key]
+                                        }
+                                    })}
+                            />
                         </Col>
                     </Form.Group>
-                    <Form.Group as={Row} className="mb-3 align-items-center" controlId="nameInput">
-                        <Form.Label column lg={4}>Name:</Form.Label>
-                        <Col>
-                            <Form.Control type="textarea" rows={5} placeholder='Name'/>
-                        </Col>
+                    <Form.Group className="mb-3 mt-3 align-items-center" controlId="reflection">
+                        <Form.Label>Reflection:</Form.Label>
+                        <Form.Text className="mx-3">(Optional)</Form.Text>
+                        <Form.Control as="textarea" rows={3} placeholder='Any memorable moments? Personal wins?'/>
                     </Form.Group>
-                    <p>rating</p>
+                    <Form.Group as={Col}>
+                        <Form.Label>Rating:</Form.Label>
+                        <Form.Range/>
+                    </Form.Group>
                 </Form>
             </Modal.Body>
 
             <Modal.Footer>
+                {/*<Button variant="secondary" onClick={handleClose()}>Close</Button>*/}
                 <Button variant="secondary">Close</Button>
-                <Button variant="primary">Save changes</Button>
+                <Button variant="primary">Submit</Button>
             </Modal.Footer>
         </Modal>
     );

@@ -1,13 +1,28 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Login.css';
-import React from 'react';
+
+
+import React, {useEffect} from 'react';
 import Button from 'react-bootstrap/Button';
 import {Container, Row, Col} from 'react-bootstrap';
 import logo from "../Take5FullLogoCropped.png";
 import Image from "react-bootstrap/Image";
 
-function Login({setIsLoggedIn}) {
-    const login = () => setIsLoggedIn(true)
+function Login({setIsLoggedIn, setUserId, setUser}) {
+    const userId = "61cc7e34b137a57798047db1"; //TODO - use actual login to get this info
+
+    const login = () => {
+        setUserId(userId);
+        if (userId)
+            setIsLoggedIn(true)
+    };
+
+    useEffect(() => {
+        fetch(`http://localhost:8081/api/users/${userId}`)
+            .then(res => res.json())
+            .then(result => setUser(result))
+            .catch((error) => console.log(error))
+    }, []);
 
     return (
         <Container className="Login d-flex">

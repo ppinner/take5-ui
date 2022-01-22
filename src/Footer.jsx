@@ -1,7 +1,6 @@
 import {Col, Row} from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import React from "react";
-import './Page.css';
 
 function Footer() {
     return (
