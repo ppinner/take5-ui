@@ -4,7 +4,7 @@ import './Login.css';
 
 import React, {useEffect} from 'react';
 import Button from 'react-bootstrap/Button';
-import {Container, Row, Col} from 'react-bootstrap';
+import {Col, Container, Row} from 'react-bootstrap';
 import logo from "../Take5FullLogoCropped.png";
 import Image from "react-bootstrap/Image";
 

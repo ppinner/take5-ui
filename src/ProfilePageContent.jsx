@@ -1,9 +1,9 @@
 import './Profile.css';
 import '../node_modules/bootstrap/dist/css/bootstrap.css';
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
-import {Container, Row, Col} from 'react-bootstrap';
+import {Col, Container, Row} from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 import FormLabel from 'react-bootstrap/FormLabel';
 import {goals} from "./constants";
@@ -49,7 +49,7 @@ function ProfilePageContent({user, setUser}) {
                         <Form.Group as={Row} className="mb-3 align-items-center" controlId="nameInput">
                             <Form.Label column lg={4}>Name:</Form.Label>
                             <Col>
-                                <Form.Control type="text" placeholder={user.name} defaultValue={user.name}/>
+                                <Form.Control type="text" readOnly placeholder={user.name} defaultValue={user.name}/>
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row} className="mb-3 align-items-center" controlId="dobInput">
@@ -68,6 +68,7 @@ function ProfilePageContent({user, setUser}) {
                                 <Select
                                     placeholder={user.focus}
                                     name="goals"
+                                    isSearchable={ false }
                                     options={
                                         Object.keys(goals).map(function (key) {
                                             return {

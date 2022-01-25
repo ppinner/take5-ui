@@ -1,24 +1,28 @@
 import './Home.css';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
-import {Container, Row, Col} from 'react-bootstrap';
+import {Col, Container, Row} from 'react-bootstrap';
 import RadarChart from 'react-svg-radar-chart';
 import 'react-svg-radar-chart/build/css/index.css';
 import {goals} from "../constants";
 
-function HomePageContent({user}) {
-    const responseMessage = (() => {
-        const numActivities = activityCount();
-        let message = "";
-        if(numActivities > 10)
-            message += `Way to go!`;
-        else if(numActivities < 3){
-            message += `Remember to add activities when you complete them!`;
-        }
-        return message
-    });
+function HomePageContent({user, setShowModal}) {
+    const [responseMessage, setResponseMessage] = useState("Welcome back");
 
+    useEffect(() => {
+        const responseMessage = (() => {
+            const numActivities = activityCount();
+            let message = "";
+            if (numActivities > 10)
+                message += `Way to go!`;
+            else if (numActivities < 3) {
+                message += `Remember to add activities when you complete them!`;
+            }
+            return message
+        });
+        setResponseMessage(responseMessage);
+    },[user]);
 
     const data = [
         {
@@ -55,7 +59,7 @@ function HomePageContent({user}) {
                 <Col xs={1}/>
                 <Col>
                     <h1>Hello, {user.name}</h1>
-                    <text>You've tracked <strong>{activityCount()}</strong> {activityCount() === 1 ? "activity" : "activities"} this week. {responseMessage()}</text>
+                    <text>You've tracked <strong>{activityCount()}</strong> {activityCount() === 1 ? "activity" : "activities"} this week. {responseMessage}</text>
                 </Col>
                 <Col xs={1}/>
             </Row>
@@ -69,7 +73,7 @@ function HomePageContent({user}) {
                 </Col>
                 <Col xs={4} className="p-3 mt-5">
                     <Row className="px-5">
-                        <Button className="my-1 px-2 primaryButton" variant="primary">
+                        <Button className="my-1 px-2 primaryButton" variant="primary" onClick={()=> setShowModal(true)}>
                             Log an Activity
                         </Button>
                         <Button className="my-1 secondaryButton" variant="outline-secondary">View Goal Progress</Button>
