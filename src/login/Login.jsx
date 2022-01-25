@@ -18,11 +18,13 @@ function Login({setIsLoggedIn, setUserId, setUser}) {
     };
 
     useEffect(() => {
-        fetch(`http://localhost:8081/api/users/${userId}`)
-            .then(res => res.json())
-            .then(result => setUser(result))
-            .catch((error) => console.log(error))
-    }, []);
+        if(userId != null) {
+            fetch(`http://localhost:8081/api/users/${userId}`)
+                .then(res => res.json())
+                .then(result => setUser(result))
+                .catch((error) => console.log(error))
+        }
+    }, [userId]);
 
     return (
         <Container className="Login d-flex">

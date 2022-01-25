@@ -7,8 +7,10 @@ import RadarChart from 'react-svg-radar-chart';
 import 'react-svg-radar-chart/build/css/index.css';
 import {goals} from "../constants";
 
-function HomePageContent({user, setShowModal}) {
+function HomePageContent({user, setShowModal, getEntriesForPastWeek}) {
     const [responseMessage, setResponseMessage] = useState("Welcome back");
+    const [graphData, setGraphData] = useState([]);
+    const [userScore, setScore] = useState(user.scores);
 
     useEffect(() => {
         const responseMessage = (() => {
@@ -22,35 +24,40 @@ function HomePageContent({user, setShowModal}) {
             return message
         });
         setResponseMessage(responseMessage);
-    },[user]);
 
-    const data = [
-        {
-            data: {
-                mindfulness: user.scores.mindfulness,
-                connection: user.scores.connection,
-                physicalActivity: user.scores.physicalActivity,
-                learning: user.scores.learning,
-                giving: user.scores.giving
-            },
-            meta: {
-                color: '#5D88BB',
-                fill: '#B3CBE4'
+        setGraphData([
+            {
+                data: {
+                    mindfulness: user.scores.mindfulness,
+                    connection: user.scores.connection,
+                    physicalActivity: user.scores.physicalActivity,
+                    learning: user.scores.learning,
+                    giving: user.scores.giving
+                },
+                meta: {
+                    color: '#5D88BB',
+                    fill: '#B3CBE4'
+                }
             }
+        ])
+    }, [user]);
+
+    useEffect(() => {
+        if(user !== null && user.scores != null) {
+            const requestOptions = {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(user.scores)
+            };
+
+            fetch(`http://localhost:8081/api/users/${user.id}/score`, requestOptions)
+                .then(res => res.json())
+                .catch((error) => console.log(error))
         }
-    ];
+    }, [userScore]);
 
     const activityCount = () => {
-        const today = new Date();
-        const weekAgo = new Date(today.getFullYear(), today.getMonth(), today.getDate()-7);
-        let weeklyActivities;
-
-        if(user.activityLog != null) {
-             weeklyActivities = user.activityLog.filter(log => {
-                return weekAgo <= log.date <= today
-            });
-        }
-        return weeklyActivities.length
+        return getEntriesForPastWeek(user).length
     };
 
     return (
@@ -59,7 +66,9 @@ function HomePageContent({user, setShowModal}) {
                 <Col xs={1}/>
                 <Col>
                     <h1>Hello, {user.name}</h1>
-                    <text>You've tracked <strong>{activityCount()}</strong> {activityCount() === 1 ? "activity" : "activities"} this week. {responseMessage}</text>
+                    <text>You've
+                        tracked <strong>{activityCount()}</strong> {activityCount() === 1 ? "activity" : "activities"} this
+                        week. {responseMessage}</text>
                 </Col>
                 <Col xs={1}/>
             </Row>
@@ -67,13 +76,14 @@ function HomePageContent({user, setShowModal}) {
                 <Col/>
                 <Col xs={6}>
                     <RadarChart captions={goals}
-                                data={data}
+                                data={graphData}
                                 size={400}
                     />
                 </Col>
                 <Col xs={4} className="p-3 mt-5">
                     <Row className="px-5">
-                        <Button className="my-1 px-2 primaryButton" variant="primary" onClick={()=> setShowModal(true)}>
+                        <Button className="my-1 px-2 primaryButton" variant="primary"
+                                onClick={() => setShowModal(true)}>
                             Log an Activity
                         </Button>
                         <Button className="my-1 secondaryButton" variant="outline-secondary">View Goal Progress</Button>

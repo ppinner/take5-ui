@@ -47,7 +47,7 @@ IconContainer.propTypes = {
 };
 
 
-function LogActivityModal({show, setShowModal, activities, userId, setUser}) {
+function LogActivityModal({show, setShowModal, activities, userId, setUser, user, getUpdatedScore}) {
     const [showError, setShowError] = useState(false); //TODO - implement error handling
     const [rating, setRating] = useState(0);
     const [activity, setActivity] = useState(null);
@@ -57,7 +57,7 @@ function LogActivityModal({show, setShowModal, activities, userId, setUser}) {
     const handleClose = () => {
         setActivityGoals([]); //to ensure select clears
         setShowModal(false);
-    }
+    };
 
     const selectActivity = (selected) => {
         //TODO - error checking on this?
@@ -68,17 +68,12 @@ function LogActivityModal({show, setShowModal, activities, userId, setUser}) {
         setActivityGoals(chosenActivity.category)
     };
 
-    //
     const selectActivityGoals = (selected) => {
-        console.log(selected)
-        console.log(activityGoals)
-
         const newOptions = selected.map(option => {
             return option.value
         });
-        console.log(newOptions)
         setActivityGoals(newOptions)
-    }
+    };
 
     const submitActivity = () => {
         const activityLog = {
@@ -101,10 +96,8 @@ function LogActivityModal({show, setShowModal, activities, userId, setUser}) {
                 body: JSON.stringify(activityLog)
             };
 
-            console.log(requestOptions);
             fetch(`http://localhost:8081/api/users/${userId}/activityLog/add`, requestOptions)
                 .then(async res => {
-                    console.log(res);
                     const data = await res.json();
 
                     if (!res.ok) {
@@ -112,7 +105,7 @@ function LogActivityModal({show, setShowModal, activities, userId, setUser}) {
                         const error = (data && data.message) || res.status;
                         return Promise.reject(error);
                     }
-                    //TODO - recalculate score accounting for activity (increment score based on activity logged to what category)
+                    data.scores = getUpdatedScore(user, user.scores, activityGoals);
                     setUser(data);
                     handleClose();
                 })

@@ -10,7 +10,6 @@ function Header({showProfile, setShowProfile, setIsLoggedIn, setShowModal}) {
     const toggleShowProfile = () => setShowProfile(!showProfile);
     const logout = () => setIsLoggedIn(false);
     const showModal = () => {
-        console.log("setShowModal to true");
         setShowModal(true);
     };
 
