@@ -1,6 +1,6 @@
 import './Profile.css';
 import '../node_modules/bootstrap/dist/css/bootstrap.css';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import {Col, Container, Row} from 'react-bootstrap';
@@ -9,6 +9,7 @@ import FormLabel from 'react-bootstrap/FormLabel';
 import {goals} from "./constants";
 import Select from 'react-select';
 import moment from "moment";
+import PersonalityTestModal from "./modals/PersonalityTestModal";
 
 const toggleEditable = (editable, setEditable) => setEditable(!editable); //TODO - actually use this
 
@@ -23,6 +24,7 @@ const calculateAge = (date) => {
 function ProfilePageContent({user, setUser}) {
     // const [showTooltip, setShowTooltip] = useState(false);
     const [editable, setEditable] = useState(false);
+    const [takePersonalityTest, setTakePersonalityTest] = useState(false);
 
     // useEffect(() => {
     //     //TODO - change page elements in response to toggle
@@ -30,7 +32,9 @@ function ProfilePageContent({user, setUser}) {
     //         //make button say submit
     //         //change to date select on the age field
     //         console.log("editable: ", editable);
-    //         toggleEditable(editable, setEditable);
+    //         // toggleEditable(editable, setEditable);
+    //     } else {
+    //         //make button say update
     //     }
     // }, [editable]);
 
@@ -68,7 +72,7 @@ function ProfilePageContent({user, setUser}) {
                                 <Select
                                     placeholder={user.focus}
                                     name="goals"
-                                    isSearchable={ false }
+                                    isSearchable={false}
                                     options={
                                         Object.keys(goals).map(function (key) {
                                             return {
@@ -85,8 +89,8 @@ function ProfilePageContent({user, setUser}) {
                                     size="sm"
                                     className="w-25 mx-2"
                                     id="profileSubmitBtn"
-                                    // onClick={toggleEditable(editable, setEditable)}
-                                >
+                                // onClick={toggleEditable(editable, setEditable)}
+                            >
                                 Update
                             </Button>
                         </Form.Group>
@@ -97,19 +101,22 @@ function ProfilePageContent({user, setUser}) {
                     <Card className="personalityResults">
                         <Card.Body>
                             <Row>
-                                {Object.entries(user.personality).map(trait => {
-                                    return (
-                                        <Card className="personalityTrait col">
-                                            <Card.Title>{trait[0].charAt(0).toUpperCase()}</Card.Title>
-                                            <Card.Text>{trait[1]}%</Card.Text>
-                                        </Card>
-                                    )
-                                })
+                                {
+                                    Object.entries(user.personality).map(trait => {
+                                        return (
+                                            <Card className="personalityTrait col">
+                                                <Card.Title>{trait[0].charAt(0).toUpperCase()}</Card.Title>
+                                                <Card.Text>{trait[1]}</Card.Text>
+                                            </Card>
+                                        )
+                                    })
                                 }
                             </Row>
                         </Card.Body>
                     </Card>
-                    <Button variant="link" className="personalityTestLink mb-2">Retake Personality Test</Button>
+                    <Button variant="link" className="personalityTestLink mb-2"
+                            onClick={() => setTakePersonalityTest(true)}>
+                        Retake Personality Test</Button>
                 </Col>
                 <Col className="">
                     <Card className="activitySummary">
@@ -140,6 +147,9 @@ function ProfilePageContent({user, setUser}) {
                 </Col>
                 <Col xs={1}/>
             </Row>
+            <PersonalityTestModal takePersonalityTest={takePersonalityTest}
+                                  setTakePersonalityTest={setTakePersonalityTest} user={user} setUser={setUser}>
+            </PersonalityTestModal>
         </Container>
     );
 }

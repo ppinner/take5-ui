@@ -30,7 +30,6 @@ const getEntriesForPastWeek = (user) => {
 };
 
 const getUpdatedScoreForActivity = (focus, currentScore, goals) => {
-    console.log("inside ", currentScore, goals)
     const score = currentScore;
     goals.map(goal => {
         if (focus === goal) {
