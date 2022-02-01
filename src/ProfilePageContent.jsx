@@ -1,3 +1,4 @@
+import Select from 'react-select';
 import './Profile.css';
 import '../node_modules/bootstrap/dist/css/bootstrap.css';
 import React, {useEffect, useState} from 'react';
@@ -7,17 +8,23 @@ import {Col, Container, Row} from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 import FormLabel from 'react-bootstrap/FormLabel';
 import {goals} from "./constants";
-import Select from 'react-select';
 import moment from "moment";
 import PersonalityTestModal from "./modals/PersonalityTestModal";
 
-const toggleEditable = (editable, setEditable) => setEditable(!editable); //TODO - actually use this
+const toggleEditable = (editable, setEditable) => setEditable(!editable);
 
 const dateFromDateString = (dateString) => {
+    console.log("dateFromDateString " + dateString + " to " + moment(new Date(dateString)).format('YYYY-MM-DDT00:00:00.000Z'));
     return moment(new Date(dateString)).format('YYYY-MM-DDT00:00:00.000Z');
 };
 
+const dateForPicker = (dateString) => {
+    console.log("date for picker " + dateString + " to " + moment(new Date(dateString)).format('YYYY-MM-DD'));
+    return moment(new Date(dateString)).format('YYYY-MM-DD')
+};
+
 const calculateAge = (date) => {
+    console.log("calculating age for " + date);
     return moment().diff(date, 'years', false);
 };
 
@@ -25,18 +32,33 @@ function ProfilePageContent({user, setUser}) {
     // const [showTooltip, setShowTooltip] = useState(false);
     const [editable, setEditable] = useState(false);
     const [takePersonalityTest, setTakePersonalityTest] = useState(false);
+    const [name, setName] = useState(user.name);
+    const [dob, setDob] = useState(user.dob);
+    const [goal, setGoal] = useState(user.focus);
 
-    // useEffect(() => {
-    //     //TODO - change page elements in response to toggle
-    //     if(editable){
-    //         //make button say submit
-    //         //change to date select on the age field
-    //         console.log("editable: ", editable);
-    //         // toggleEditable(editable, setEditable);
-    //     } else {
-    //         //make button say update
-    //     }
-    // }, [editable]);
+    const saveChanges = () => {
+        //TODO - error handling with incorrect inputs
+        const updatedUser = user;
+        if (name != undefined)
+            updatedUser.name = name;
+        if (dob != NaN)
+            updatedUser.dob = dateFromDateString(dob);
+        updatedUser.focus = goal;
+
+        setUser(updatedUser);
+        const requestOptions = {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(updatedUser)
+        };
+
+        fetch(`http://localhost:8081/api/users/${user.id}`, requestOptions)
+            .then(res => res.json())
+            .catch((error) => console.log(error));
+
+
+        toggleEditable(editable, setEditable);
+    };
 
     return (
         <Container className="Profile">
@@ -53,24 +75,39 @@ function ProfilePageContent({user, setUser}) {
                         <Form.Group as={Row} className="mb-3 align-items-center" controlId="nameInput">
                             <Form.Label column lg={4}>Name:</Form.Label>
                             <Col>
-                                <Form.Control type="text" readOnly placeholder={user.name} defaultValue={user.name}/>
+                                <Form.Control type="text" readOnly={!editable}
+                                              onChange={(e) => setName(e.target.value)}
+                                              placeholder={user.name}
+                                              defaultValue={name}/>
                             </Col>
                         </Form.Group>
-                        <Form.Group as={Row} className="mb-3 align-items-center" controlId="dobInput">
-                            {/*<Form.Label column lg={4}>Date of Birth:</Form.Label>*/}
-                            {/*<Col>*/}
-                            {/*<Form.Control type="date" id="dobField" defaultValue={dateFromDateString(user.dob)}/>*/}
-                            {/*</Col>*/}
-                            <Form.Label column id="ageLabel" lg={4}>Age:</Form.Label>
-                            <Col>
-                                <Form.Control type="text" readOnly value={calculateAge(dateFromDateString(user.dob))}/>
-                            </Col>
-                        </Form.Group>
+
+                        {editable ?
+                            <Form.Group as={Row} className="mb-3 align-items-center" controlId="dobInput">
+                                <Form.Label column lg={4}>Date of Birth:</Form.Label>
+                                <Col>
+                                    <Form.Control type="date" id="dobField"
+                                                  defaultValue={dateForPicker(dob)}
+                                                  onfocus={dateForPicker(dob)}
+                                                  onChange={(e) => setDob(dateFromDateString(e.target.value))}
+                                    />
+                                </Col>
+                            </Form.Group>
+                            :
+                            <Form.Group as={Row} className="mb-3 align-items-center" controlId="ageDisplay">
+                                <Form.Label column id="ageLabel" lg={4}>Age:</Form.Label>
+                                <Col>
+                                    <Form.Control type="text" readOnly
+                                                  value={calculateAge(dateFromDateString(user.dob))}/>
+                                </Col>
+                            </Form.Group>
+                        }
+
                         <Form.Group as={Row} className="mb-3 align-items-center" controlId="goalInput">
                             <Form.Label column lg={4}>Primary Goal:</Form.Label>
                             <Col>
                                 <Select
-                                    placeholder={user.focus}
+                                    placeholder={goals[user.focus]}
                                     name="goals"
                                     isSearchable={false}
                                     options={
@@ -80,7 +117,10 @@ function ProfilePageContent({user, setUser}) {
                                             }
                                         })
                                     }
+                                    className="goalSelect"
+                                    isDisabled={!editable}
                                     defaultValue={user.focus}
+                                    onChange={(e) => setGoal(e.value)}
                                 />
                             </Col>
                         </Form.Group>
@@ -89,9 +129,9 @@ function ProfilePageContent({user, setUser}) {
                                     size="sm"
                                     className="w-25 mx-2"
                                     id="profileSubmitBtn"
-                                // onClick={toggleEditable(editable, setEditable)}
+                                    onClick={editable ? saveChanges : () => toggleEditable(editable, setEditable)}
                             >
-                                Update
+                                {editable ? "Save" : "Update"}
                             </Button>
                         </Form.Group>
                     </Form>

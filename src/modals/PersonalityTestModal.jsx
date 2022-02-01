@@ -4,7 +4,7 @@ import React, {useEffect, useState} from "react";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import Slider from '@mui/material/Slider';
-import {BigFiveQuestions} from "./BigFiveQuestions";
+import { BigFiveQuestions } from "./BigFiveQuestions";
 import Col from "react-bootstrap/Col";
 import withStyles from "@mui/styles/withStyles/withStyles";
 
@@ -12,23 +12,13 @@ function PersonalityTestModal({takePersonalityTest, setTakePersonalityTest, user
     const [showError, setShowError] = useState(false); //TODO - implement error handling
     const [answers, setAnswers] = useState(new Array(50).fill(3));
     const [currentPage, setCurrentPage] = useState(1); //TODO - make info page for modal to start on
-    const [bounds, setBounds] = useState({start: 0, end: 9});
+    const [bounds, setBounds] = useState({start: 0, end: 5});
     const [formComplete, setFormComplete] = useState(false);
-    const [slider1, setSlider1] = useState();
-    const [slider2, setSlider2] = useState();
-    const [slider3, setSlider3] = useState();
-    const [slider4, setSlider4] = useState();
-    const [slider5, setSlider5] = useState();
 
     useEffect(() => {
         if (currentPage !== 0) {
             let start = (currentPage - 1) * 5;
             setBounds({start: start, end: start + 5});
-            setSlider1(answers[bounds.start]);
-            setSlider2(answers[bounds.start+1]);
-            setSlider3(answers[bounds.start+2]);
-            setSlider4(answers[bounds.start+3]);
-            setSlider5(answers[bounds.start+4]);
         }
     }, [currentPage]);
 
@@ -176,6 +166,28 @@ function PersonalityTestModal({takePersonalityTest, setTakePersonalityTest, user
                     Complete the phrases. I ...
                 </h5>
                 <Form className="personalityTest">
+                    {/*{*/}
+                        {/*BigFiveQuestions.slice(bounds.start, bounds.end).map((question, index) => {*/}
+                            {/*// console.log(index + ":" + question)*/}
+                            {/*<Form.Group className="d-flex align-content-center">*/}
+                                {/*<Col>*/}
+                                    {/*<Form.Label>{index + 1}. question</Form.Label>*/}
+                                    {/*<div className="mx-5 mb-3 justify-content-center">*/}
+                                        {/*<NoTrackSlider*/}
+                                            {/*marks={marks}*/}
+                                            {/*name="slider-1"*/}
+                                            {/*min={1}*/}
+                                            {/*max={5}*/}
+                                            {/*step={null}*/}
+                                            {/*defaultValue={answers[index]}*/}
+                                            {/*valueLabelDisplay="auto"*/}
+                                            {/*onChangeCommitted={(e, val) => updateAnswer(val, index)}*/}
+                                        {/*/>*/}
+                                    {/*</div>*/}
+                                {/*</Col>*/}
+                            {/*</Form.Group>*/}
+                        {/*})*/}
+                    {/*}*/}
                     <Form.Group className="d-flex align-content-center">
                         <Col>
                             <Form.Label>{bounds.start + 1}. {BigFiveQuestions[bounds.start]}</Form.Label>
