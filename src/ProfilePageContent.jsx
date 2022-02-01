@@ -7,24 +7,23 @@ import Card from 'react-bootstrap/Card';
 import {Col, Container, Row} from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 import FormLabel from 'react-bootstrap/FormLabel';
-import {goals} from "./constants";
+import {goals, personalityTraitDesc, personalityTraits} from "./constants";
+import Popover from 'react-bootstrap/Popover';
 import moment from "moment";
 import PersonalityTestModal from "./modals/PersonalityTestModal";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 
 const toggleEditable = (editable, setEditable) => setEditable(!editable);
 
 const dateFromDateString = (dateString) => {
-    console.log("dateFromDateString " + dateString + " to " + moment(new Date(dateString)).format('YYYY-MM-DDT00:00:00.000Z'));
     return moment(new Date(dateString)).format('YYYY-MM-DDT00:00:00.000Z');
 };
 
 const dateForPicker = (dateString) => {
-    console.log("date for picker " + dateString + " to " + moment(new Date(dateString)).format('YYYY-MM-DD'));
     return moment(new Date(dateString)).format('YYYY-MM-DD')
 };
 
 const calculateAge = (date) => {
-    console.log("calculating age for " + date);
     return moment().diff(date, 'years', false);
 };
 
@@ -59,6 +58,15 @@ function ProfilePageContent({user, setUser}) {
 
         toggleEditable(editable, setEditable);
     };
+
+    const popover = ((trait) => {
+        return <Popover>
+            <Popover.Header as="h3">{personalityTraits[trait]}</Popover.Header>
+            <Popover.Body>
+                {personalityTraitDesc[trait]}
+            </Popover.Body>
+        </Popover>
+    });
 
     return (
         <Container className="Profile">
@@ -144,10 +152,17 @@ function ProfilePageContent({user, setUser}) {
                                 {
                                     Object.entries(user.personality).map(trait => {
                                         return (
-                                            <Card className="personalityTrait col">
-                                                <Card.Title>{trait[0].charAt(0).toUpperCase()}</Card.Title>
-                                                <Card.Text>{trait[1]}</Card.Text>
-                                            </Card>
+                                            <OverlayTrigger
+                                                trigger="hover"
+                                                key={trait}
+                                                placement="top"
+                                                overlay={popover(trait[0])}
+                                            >
+                                                <Card className="personalityTrait col">
+                                                    <Card.Title className="personalityTrait_title">{trait[0].charAt(0).toUpperCase()}</Card.Title>
+                                                    <Card.Text>{trait[1]}</Card.Text>
+                                                </Card>
+                                            </OverlayTrigger>
                                         )
                                     })
                                 }

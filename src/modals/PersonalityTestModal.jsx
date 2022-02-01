@@ -4,14 +4,15 @@ import React, {useEffect, useState} from "react";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import Slider from '@mui/material/Slider';
-import { BigFiveQuestions } from "./BigFiveQuestions";
+import {BigFiveQuestions} from "./BigFiveQuestions";
 import Col from "react-bootstrap/Col";
 import withStyles from "@mui/styles/withStyles/withStyles";
+import {personalityTraitDesc, personalityTraits} from "../constants";
 
 function PersonalityTestModal({takePersonalityTest, setTakePersonalityTest, user, setUser}) {
     const [showError, setShowError] = useState(false); //TODO - implement error handling
     const [answers, setAnswers] = useState(new Array(50).fill(3));
-    const [currentPage, setCurrentPage] = useState(1); //TODO - make info page for modal to start on
+    const [currentPage, setCurrentPage] = useState(0);
     const [bounds, setBounds] = useState({start: 0, end: 5});
     const [formComplete, setFormComplete] = useState(false);
 
@@ -52,7 +53,8 @@ function PersonalityTestModal({takePersonalityTest, setTakePersonalityTest, user
 
     const resetTestModal = () => {
         setAnswers(new Array(50).fill(3));
-        setCurrentPage(1);
+        setCurrentPage(0);
+        setFormComplete(false);
     };
 
     const marks = [
@@ -149,7 +151,6 @@ function PersonalityTestModal({takePersonalityTest, setTakePersonalityTest, user
         resetTestModal();
     };
 
-    //TODO- make not hardcoded!
     return (
         <Modal
             show={takePersonalityTest}
@@ -159,119 +160,50 @@ function PersonalityTestModal({takePersonalityTest, setTakePersonalityTest, user
             centered
         >
             <Modal.Header>
-                <Modal.Title>Big Five Personality Test</Modal.Title>
+                <Modal.Title>The Big Five Personality Test</Modal.Title>
             </Modal.Header>
-            <Modal.Body>
-                <h5>
-                    Complete the phrases. I ...
-                </h5>
-                <Form className="personalityTest">
-                    {/*{*/}
-                        {/*BigFiveQuestions.slice(bounds.start, bounds.end).map((question, index) => {*/}
-                            {/*// console.log(index + ":" + question)*/}
-                            {/*<Form.Group className="d-flex align-content-center">*/}
-                                {/*<Col>*/}
-                                    {/*<Form.Label>{index + 1}. question</Form.Label>*/}
-                                    {/*<div className="mx-5 mb-3 justify-content-center">*/}
-                                        {/*<NoTrackSlider*/}
-                                            {/*marks={marks}*/}
-                                            {/*name="slider-1"*/}
-                                            {/*min={1}*/}
-                                            {/*max={5}*/}
-                                            {/*step={null}*/}
-                                            {/*defaultValue={answers[index]}*/}
-                                            {/*valueLabelDisplay="auto"*/}
-                                            {/*onChangeCommitted={(e, val) => updateAnswer(val, index)}*/}
-                                        {/*/>*/}
-                                    {/*</div>*/}
-                                {/*</Col>*/}
-                            {/*</Form.Group>*/}
-                        {/*})*/}
-                    {/*}*/}
-                    <Form.Group className="d-flex align-content-center">
-                        <Col>
-                            <Form.Label>{bounds.start + 1}. {BigFiveQuestions[bounds.start]}</Form.Label>
-                            <div className="mx-5 mb-3 justify-content-center">
-                                <NoTrackSlider
-                                    marks={marks}
-                                    name="slider-1"
-                                    min={1}
-                                    max={5}
-                                    step={null}
-                                    defaultValue={answers[bounds.start]}
-                                    valueLabelDisplay="auto"
-                                    onChangeCommitted={(e, val) => updateAnswer(val, bounds.start)}
-                                />
-                            </div>
-                        </Col>
-                    </Form.Group>
-                    <Form.Group className="d-flex align-content-center">
-                        <Col>
-                            <Form.Label>{bounds.start + 2}. {BigFiveQuestions[bounds.start + 1]}</Form.Label>
-                            <div className="mx-5 mb-3 justify-content-center">
-                                <NoTrackSlider
-                                    marks={marks}
-                                    name="slider-2"
-                                    min={1}
-                                    max={5}
-                                    defaultValue={answers[bounds.start + 1]}
-                                    valueLabelDisplay="auto"
-                                    size="large"
-                                    onChangeCommitted={(e, val) => updateAnswer(val, bounds.start+1)}
-                                />
-                            </div>
-                        </Col>
-                    </Form.Group>
-                    <Form.Group className="d-flex align-content-center">
-                        <Col>
-                            <Form.Label>{bounds.start + 3}. {BigFiveQuestions[bounds.start + 2]}</Form.Label>
-                            <div className="mx-5 mb-3 justify-content-center">
-                                <NoTrackSlider
-                                    marks={marks}
-                                    name="slider-3"
-                                    min={1}
-                                    max={5}
-                                    defaultValue={answers[bounds.start + 2]}
-                                    valueLabelDisplay="auto"
-                                    onChangeCommitted={(e, val) => updateAnswer(val, bounds.start+2)}
-                                />
-                            </div>
-                        </Col>
-                    </Form.Group>
-                    <Form.Group className="d-flex align-content-center">
-                        <Col>
-                            <Form.Label>{bounds.start + 4}. {BigFiveQuestions[bounds.start + 3]}</Form.Label>
-                            <div className="mx-5 mb-3 justify-content-center">
-                                <NoTrackSlider
-                                    marks={marks}
-                                    name="slider-4"
-                                    min={1}
-                                    max={5}
-                                    defaultValue={answers[bounds.start + 3]}
-                                    valueLabelDisplay="auto"
-                                    onChangeCommitted={(e, val) => updateAnswer(val, bounds.start+3)}
-                                />
-                            </div>
-                        </Col>
-                    </Form.Group>
-                    <Form.Group className="d-flex align-content-center">
-                        <Col>
-                            <Form.Label>{bounds.start + 5}. {BigFiveQuestions[bounds.start + 4]}</Form.Label>
-                            <div className="mx-5 mb-3 justify-content-center">
-                                <NoTrackSlider
-                                    marks={marks}
-                                    name="slider-5"
-                                    min={1}
-                                    max={5}
-                                    defaultValue={answers[bounds.start + 4]}
-                                    valueLabelDisplay="auto"
-                                    onChangeCommitted={(e, val) => updateAnswer(val, bounds.start+4)}
-                                />
-                            </div>
-                        </Col>
-                    </Form.Group>
-                </Form>
-            </Modal.Body>
+            {
+                currentPage === 0 ?
+                    <Modal.Body>
+                        <p>This is an evidence-based personality test; it will help you understand why you act the way
+                            that you do and how your personality is structured.</p>
+                        <p>There are 50 questions and it will take 10-15minutes to complete</p>
+                        <p>The test calculates a score out of 40 for the following personality traits:</p>
+                        {
+                            Object.entries(personalityTraitDesc).map((trait) => {
+                                return <p><strong>{personalityTraits[trait[0]]}:</strong> {trait[1]}</p>
+                            })
+                        }
+                    </Modal.Body>
+                    :
+                    <Modal.Body>
+                        <h5>
+                            Complete the phrases. I ...
+                        </h5>
+                        <Form className="personalityTest">
+                            {
+                                BigFiveQuestions.slice(bounds.start, bounds.end).map((question, index) => {
+                                    return <Form.Group className="d-flex align-content-center">
+                                        <Col>
+                                            <Form.Label>{bounds.start + index + 1}. {question}</Form.Label>
+                                            <div className="mx-5 mb-3 justify-content-center">
+                                                <NoTrackSlider
+                                                    marks={marks}
+                                                    min={1}
+                                                    max={5}
+                                                    step={null}
+                                                    defaultValue={answers[index]}
+                                                    valueLabelDisplay="auto"
+                                                    onChangeCommitted={(e, val) => updateAnswer(val, index)}
+                                                />
+                                            </div>
+                                        </Col>
+                                    </Form.Group>
+                                })
+                            }
+                        </Form>
+                    </Modal.Body>
+            }
             <Modal.Footer>
                 <Col className="justify-content-start">
                     <Button variant="secondary" onClick={handleClose}>Close</Button>
@@ -281,7 +213,7 @@ function PersonalityTestModal({takePersonalityTest, setTakePersonalityTest, user
                     <p class="align-self-center my-1">Page {currentPage} of 10</p>
                 </Col>
                 <Col className="d-flex justify-content-end">
-                    <Button className="mx-1" variant="outline-primary" onClick={goForward}>Next</Button>
+                    <Button className="mx-1" variant="outline-primary" onClick={goForward}>{currentPage === 0 ? "Start" : "Next"}</Button>
                     <Button variant="primary" onClick={submitTest} disabled={!formComplete}>Submit</Button>
                 </Col>
             </Modal.Footer>
