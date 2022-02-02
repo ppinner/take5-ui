@@ -27,13 +27,16 @@ const calculateAge = (date) => {
     return moment().diff(date, 'years', false);
 };
 
-function ProfilePageContent({user, setUser}) {
-    // const [showTooltip, setShowTooltip] = useState(false);
+function ProfilePageContent({user, setUser, activities}) {
     const [editable, setEditable] = useState(false);
     const [takePersonalityTest, setTakePersonalityTest] = useState(false);
     const [name, setName] = useState(user.name);
     const [dob, setDob] = useState(user.dob);
     const [goal, setGoal] = useState(user.focus);
+    const [mostPopularGoal, setMostPopularGoal] = useState();
+    const [mostPopularActivity, setMostPopularActivity] = useState();
+    const [leastEngagedGoal, setLeastEngagedGoal] = useState();
+    const [mostImprovedGoal, setMostImprovedGoal] = useState();
 
     const saveChanges = () => {
         //TODO - error handling with incorrect inputs
@@ -58,6 +61,57 @@ function ProfilePageContent({user, setUser}) {
 
         toggleEditable(editable, setEditable);
     };
+
+    useEffect(() => {
+        if (user != null && user.activityLog != null) {
+            let activityCounts = {};
+            let goalCounts = {};
+            for (let i = 0; i < user.activityLog.length; i++) {
+                if (user.activityLog[i].activity.id != null) {
+                    const activity = user.activityLog[i].activity;
+                    activityCounts[activity.id] = (activityCounts[activity.id] || 0) + 1;
+                    activity.category.map((goal) => {
+                        goalCounts[goal] = (goalCounts[goal] || 0) + 1;
+                    })
+                }
+            }
+
+            if (Object.keys(activityCounts).length > 0 && activities.length > 0) {
+                //TODO - figure out why only looking
+                setMostPopularActivity(() => {
+                    const mostPopularId = Object.keys(activityCounts).reduce((max, key) => {
+                        return (max === undefined || activityCounts[key] > activityCounts[max]) ? +key : max
+                    });
+                    return activities.find((activity) => activity.id === mostPopularId).name;
+                });
+
+                setMostPopularGoal(() => {
+                    const mostPopularGoal = Object.keys(goalCounts).reduce((max, key) => {
+                        return (max === undefined || goalCounts[key] > goalCounts[max]) ? +key : max
+                    });
+                    return goals[mostPopularGoal];
+                });
+
+                setLeastEngagedGoal(() => {
+                    Object.keys(goals).map((goal)=> {
+                        if(goalCounts[goal] === undefined)
+                            goalCounts[goal] = 0;
+                    });
+
+                    const leastPopularGoal = Object.keys(goals).reduce((min, key) => {
+                        return (min === undefined || goalCounts[key] < goalCounts[min]) ? key : min
+                    });
+                    return goals[leastPopularGoal];
+                });
+
+                setMostImprovedGoal(() => {
+                    return null
+                    //TODO - calculate score from a month ago vs score now - to do when going goal progress modal
+                })
+            }
+        }
+    }, [user]);
+
 
     const popover = ((trait) => {
         return <Popover>
@@ -153,13 +207,14 @@ function ProfilePageContent({user, setUser}) {
                                     Object.entries(user.personality).map(trait => {
                                         return (
                                             <OverlayTrigger
-                                                trigger="hover"
+                                                trigger="['hover', 'focus']"
                                                 key={trait}
                                                 placement="top"
                                                 overlay={popover(trait[0])}
                                             >
                                                 <Card className="personalityTrait col">
-                                                    <Card.Title className="personalityTrait_title">{trait[0].charAt(0).toUpperCase()}</Card.Title>
+                                                    <Card.Title
+                                                        className="personalityTrait_title">{trait[0].charAt(0).toUpperCase()}</Card.Title>
                                                     <Card.Text>{trait[1]}</Card.Text>
                                                 </Card>
                                             </OverlayTrigger>
@@ -180,21 +235,21 @@ function ProfilePageContent({user, setUser}) {
                             <Row>
                                 <Card className="summaryStat col">
                                     <Card.Title>Most Popular Activity:</Card.Title>
-                                    <Card.Text>French Lessons</Card.Text>
+                                    <Card.Text>{mostPopularActivity ? mostPopularActivity : "..."}</Card.Text>
                                 </Card>
                                 <Card className="summaryStat col">
                                     <Card.Title>Most Popular Goal:</Card.Title>
-                                    <Card.Text>Learning</Card.Text>
+                                    <Card.Text>{mostPopularGoal ? mostPopularGoal : "..."}</Card.Text>
                                 </Card>
                             </Row>
                             <Row>
                                 <Card className="summaryStat col">
                                     <Card.Title>Most Improved Goal:</Card.Title>
-                                    <Card.Text>Learning</Card.Text>
+                                    <Card.Text>{mostImprovedGoal ? mostImprovedGoal : "..."}</Card.Text>
                                 </Card>
                                 <Card className="summaryStat col">
                                     <Card.Title>Least Engaged Goal:</Card.Title>
-                                    <Card.Text>Giving</Card.Text>
+                                    <Card.Text>{leastEngagedGoal ? leastEngagedGoal : "..."}</Card.Text>
                                 </Card>
                             </Row>
                         </Card.Body>

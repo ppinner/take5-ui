@@ -8,14 +8,15 @@ import HomePageContent from "./home/HomePageContent";
 import ProfilePageContent from "./ProfilePageContent";
 import Login from "./login/Login";
 
-const renderPageContent = (showProfile, user, setUser, setShowModal) => {
+const renderPageContent = (showProfile, user, setUser, setShowModal, activities) => {
     if (showProfile) {
-        return <ProfilePageContent user={user} setUser={setUser}/>;
+        return <ProfilePageContent user={user} setUser={setUser} activities={activities}/>;
     } else {
         return <HomePageContent user={user} setShowModal={setShowModal} getEntriesForPastWeek={getEntriesForPastWeek}/>;
     }
 };
 
+//TODO - make time period adjustable?
 const getEntriesForPastWeek = (user) => {
     const today = new Date();
     const weekAgo = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
@@ -26,6 +27,7 @@ const getEntriesForPastWeek = (user) => {
             return weekAgo <= log.date <= today
         });
     }
+
     return weeklyActivities
 };
 
@@ -100,7 +102,7 @@ function Page() {
                         setShowProfile={setShowProfile}
                         setIsLoggedIn={setIsLoggedIn}
                         setShowModal={setShowModal}/>
-                {renderPageContent(showProfile, user, setUser, setShowModal, getEntriesForPastWeek)}
+                {renderPageContent(showProfile, user, setUser, setShowModal, activities)}
 
                 <LogActivityModal show={showModal} setShowModal={setShowModal} activities={activities} userId={userId}
                                   setUser={setUser} user={user} getUpdatedScore={getUpdatedScoreForActivity}/>
