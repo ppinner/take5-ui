@@ -7,6 +7,8 @@ import Footer from "./Footer";
 import HomePageContent from "./home/HomePageContent";
 import ProfilePageContent from "./ProfilePageContent";
 import Login from "./login/Login";
+import PrivacyModal from "./modals/PrivacyModal";
+import HelpModal from "./modals/HelpModal";
 
 const renderPageContent = (showProfile, user, setUser, setShowModal, activities) => {
     if (showProfile) {
@@ -50,6 +52,8 @@ const getUpdatedScoreForActivity = (focus, currentScore, goals) => {
 function Page() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [showProfile, setShowProfile] = useState(false);
+    const [showPrivacy, setShowPrivacy] = useState(false);
+    const [showHelp, setShowHelp] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false); //TODO - implement loading icon
     const [error, setError] = useState(false); //TODO - implement error notifications
@@ -106,8 +110,9 @@ function Page() {
 
                 <LogActivityModal show={showModal} setShowModal={setShowModal} activities={activities} userId={userId}
                                   setUser={setUser} user={user} getUpdatedScore={getUpdatedScoreForActivity}/>
-
-                <Footer/>
+                <PrivacyModal show={showPrivacy} setShowPrivacy={setShowPrivacy} />
+                <HelpModal show={showHelp} setShowHelp={setShowHelp} />
+                <Footer setShowPrivacy={setShowPrivacy} setShowHelp={setShowHelp}/>
             </Container>
         );
     }
