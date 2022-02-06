@@ -38,11 +38,10 @@ function PrivacyModal({show, setShowPrivacy}) {
                 </p>
                 <h3 className="my-1">Contact details</h3>
                 <p>
-                    Name: Poppy Pinner
-                    Address: Mile End Rd, Bethnal Green, London E1 4NS
-                    Phone Number: 0207 882 5005.
-
-                    E-mail: ec18525@qmul.ac.uk
+                    <p>Name: Poppy Pinner</p>
+                    <p>Address: Mile End Rd, Bethnal Green, London E1 4NS</p>
+                    <p>Phone Number: 0207 882 5005</p>
+                    <p>E-mail: ec18525@qmul.ac.uk</p>
                 </p>
 
             </Modal.Body>

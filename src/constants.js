@@ -1,3 +1,10 @@
+import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
+import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied';
+import SentimentSatisfiedIcon from '@mui/icons-material/SentimentSatisfied';
+import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAltOutlined';
+import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
+import React from "react";
+
 export const goals = {
     mindfulness: 'Mindfulness',
     connection: 'Connection',
@@ -25,4 +32,27 @@ export const personalityTraitDesc = {
         'tend to follow rules and prefer clean homes. Low scorers may be messy and cheat others.',
     openness: 'The personality trait of seeking new experience and intellectual ' +
         'pursuits. High scores may day dream a lot. Low scorers may be very down to earth.'
-}
+};
+
+export const emoticons = {
+    1: {
+        icon: <SentimentVeryDissatisfiedIcon/>,
+        label: 'Very Dissatisfied',
+    },
+    2: {
+        icon: <SentimentDissatisfiedIcon/>,
+        label: 'Dissatisfied',
+    },
+    3: {
+        icon: <SentimentSatisfiedIcon/>,
+        label: 'Neutral',
+    },
+    4: {
+        icon: <SentimentSatisfiedAltIcon/>,
+        label: 'Satisfied',
+    },
+    5: {
+        icon: <SentimentVerySatisfiedIcon/>,
+        label: 'Very Satisfied',
+    },
+};

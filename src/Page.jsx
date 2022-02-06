@@ -9,6 +9,7 @@ import ProfilePageContent from "./ProfilePageContent";
 import Login from "./login/Login";
 import PrivacyModal from "./modals/PrivacyModal";
 import HelpModal from "./modals/HelpModal";
+import ActivityHistoryModal from "./modals/ActivityHistoryModal";
 
 const renderPageContent = (showProfile, user, setUser, setShowModal, activities) => {
     if (showProfile) {
@@ -53,8 +54,10 @@ function Page() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [showProfile, setShowProfile] = useState(false);
     const [showPrivacy, setShowPrivacy] = useState(false);
+    const [editActivityLog, setEditActivityLog] = useState(null);
     const [showHelp, setShowHelp] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const [showHistory, setShowHistory] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false); //TODO - implement loading icon
     const [error, setError] = useState(false); //TODO - implement error notifications
     const [userId, setUserId] = useState(null);
@@ -81,7 +84,7 @@ function Page() {
     // };
 
     useEffect(() => {
-        if(userId != null) {
+        if (userId != null) {
             fetch(`http://localhost:8081/api/users/${userId}`)
                 .then(res => res.json())
                 .then(result => {
@@ -105,14 +108,20 @@ function Page() {
                 <Header showProfile={showProfile}
                         setShowProfile={setShowProfile}
                         setIsLoggedIn={setIsLoggedIn}
-                        setShowModal={setShowModal}/>
+                        setShowModal={setShowModal}
+                        setShowHistory={setShowHistory}
+                />
                 {renderPageContent(showProfile, user, setUser, setShowModal, activities)}
 
                 <LogActivityModal show={showModal} setShowModal={setShowModal} activities={activities} userId={userId}
-                                  setUser={setUser} user={user} getUpdatedScore={getUpdatedScoreForActivity}/>
-                <PrivacyModal show={showPrivacy} setShowPrivacy={setShowPrivacy} />
-                <HelpModal show={showHelp} setShowHelp={setShowHelp} />
+                                  setUser={setUser} user={user} getUpdatedScore={getUpdatedScoreForActivity}
+                                  editing={editActivityLog} setEditing={setEditActivityLog}/>
+                <PrivacyModal show={showPrivacy} setShowPrivacy={setShowPrivacy}/>
+                <HelpModal show={showHelp} setShowHelp={setShowHelp}/>
                 <Footer setShowPrivacy={setShowPrivacy} setShowHelp={setShowHelp}/>
+                <ActivityHistoryModal show={showHistory} setShowHistory={setShowHistory} user={user}
+                                      setShowActivityModal={setShowModal} setUser={setUser}
+                                      setEditActivityLog={setEditActivityLog}/>
             </Container>
         );
     }

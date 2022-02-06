@@ -77,12 +77,11 @@ function ProfilePageContent({user, setUser, activities}) {
             }
 
             if (Object.keys(activityCounts).length > 0 && activities.length > 0) {
-                //TODO - figure out why only looking
                 setMostPopularActivity(() => {
                     const mostPopularId = Object.keys(activityCounts).reduce((max, key) => {
-                        return (max === undefined || activityCounts[key] > activityCounts[max]) ? +key : max
+                        return ((max === undefined) || activityCounts[key] > activityCounts[max]) ? +key : max
                     });
-                    return activities.find((activity) => activity.id === mostPopularId).name;
+                    return activities.find((activity) => activity.id === mostPopularId).name ;
                 });
 
                 setMostPopularGoal(() => {

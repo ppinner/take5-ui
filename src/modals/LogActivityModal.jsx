@@ -1,41 +1,13 @@
 import '../Page.css';
 import Button from "react-bootstrap/Button";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import {Col} from "react-bootstrap";
 import Select from 'react-select';
-import {goals} from "../constants";
+import {goals, emoticons} from "../constants";
 import Rating from '@mui/material/Rating';
-import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
-import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied';
-import SentimentSatisfiedIcon from '@mui/icons-material/SentimentSatisfied';
-import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAltOutlined';
-import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
 import PropTypes from "prop-types";
-
-const emoticons = {
-    1: {
-        icon: <SentimentVeryDissatisfiedIcon/>,
-        label: 'Very Dissatisfied',
-    },
-    2: {
-        icon: <SentimentDissatisfiedIcon/>,
-        label: 'Dissatisfied',
-    },
-    3: {
-        icon: <SentimentSatisfiedIcon/>,
-        label: 'Neutral',
-    },
-    4: {
-        icon: <SentimentSatisfiedAltIcon/>,
-        label: 'Satisfied',
-    },
-    5: {
-        icon: <SentimentVerySatisfiedIcon/>,
-        label: 'Very Satisfied',
-    },
-};
 
 function IconContainer(props) {
     const {value, ...other} = props;
@@ -46,8 +18,7 @@ IconContainer.propTypes = {
     value: PropTypes.number.isRequired,
 };
 
-
-function LogActivityModal({show, setShowModal, activities, userId, setUser, user, getUpdatedScore}) {
+function LogActivityModal({show, setShowModal, activities, userId, setUser, user, getUpdatedScore, editing, setEditing}) {
     const [showError, setShowError] = useState(false); //TODO - implement error handling
     const [rating, setRating] = useState(0);
     const [activity, setActivity] = useState(null);
@@ -55,16 +26,24 @@ function LogActivityModal({show, setShowModal, activities, userId, setUser, user
     const [reflection, setReflection] = useState("");
 
     const handleClose = () => {
-        setActivityGoals([]); //to ensure select clears
+        clearModal();
         setShowModal(false);
     };
+
+    const clearModal = () => {
+        setActivityGoals([]); //to ensure select clears
+        setReflection("");
+        setRating(0);
+        setActivity(null);
+        setEditing(null);
+    }
 
     const selectActivity = (selected) => {
         //TODO - error checking on this?
         const chosenActivity = activities.find(activity => {
             return activity.id === selected.value
         });
-        setActivity(chosenActivity)
+        setActivity(chosenActivity);
         setActivityGoals(chosenActivity.category)
     };
 
@@ -75,6 +54,17 @@ function LogActivityModal({show, setShowModal, activities, userId, setUser, user
         setActivityGoals(newOptions)
     };
 
+    useEffect(() => {
+        if(editing != null){
+            setRating(editing.rating);
+            setActivity(editing.activity);
+            setActivityGoals(editing.activity.category);
+            setReflection(editing.reflection);
+        } else {
+            clearModal();
+        }
+    }, [editing]);
+
     const submitActivity = () => {
         const activityLog = {
             "activity": {
@@ -83,10 +73,10 @@ function LogActivityModal({show, setShowModal, activities, userId, setUser, user
                 "description": activity.description,
                 "category": activityGoals
             },
-            "reflection": reflection.target.value || "",
+            "reflection": reflection || "",
             "rating": rating ? rating : 0,
             "date": new Date(),
-            "id": "fakeId"
+            "id": editing ? editing.id : null
         };
 
         if (activityLog.activity != null && activityLog.activity.name != null) {
@@ -96,7 +86,7 @@ function LogActivityModal({show, setShowModal, activities, userId, setUser, user
                 body: JSON.stringify(activityLog)
             };
 
-            fetch(`http://localhost:8081/api/users/${userId}/activityLog/add`, requestOptions)
+            fetch(`http://localhost:8081/api/users/${userId}/activityLog/edit`, requestOptions)
                 .then(async res => {
                     const data = await res.json();
 
@@ -113,6 +103,7 @@ function LogActivityModal({show, setShowModal, activities, userId, setUser, user
                     setShowError(true);
                     console.log(error)
                 });
+            clearModal();
         } else {
             console.log("error in input - please provide an activity name");
         }
@@ -128,7 +119,7 @@ function LogActivityModal({show, setShowModal, activities, userId, setUser, user
         >
             <link rel="stylesheet" href="bootstrap-multiselect.css" type="text/css"/>
             <Modal.Header>
-                <Modal.Title>Log an Activity</Modal.Title>
+                <Modal.Title>{editing != null ? "Edit Activity Log" : "Log an Activity"}</Modal.Title>
             </Modal.Header>
 
             <Modal.Body>
@@ -147,6 +138,9 @@ function LogActivityModal({show, setShowModal, activities, userId, setUser, user
                                 onChange={event => {
                                     selectActivity(event);
                                 }}
+                                value={activity ? {
+                                        value: activity.id, label: activity.name
+                                    } : null}
                             />
                         </Col>
                     </Form.Group>
@@ -179,8 +173,9 @@ function LogActivityModal({show, setShowModal, activities, userId, setUser, user
                         <Form.Text className="mx-3">(Optional)</Form.Text>
                         <Form.Control as="textarea"
                                       onChange={event => {
-                                          setReflection(event);
+                                          setReflection(event.target.value);
                                       }}
+                                      value={reflection ? reflection : ""}
                                       rows={3} placeholder='Any memorable moments? Personal wins?'/>
                     </Form.Group>
                     <Form.Group as={Col} className="d-flex align-content-center">
@@ -194,6 +189,7 @@ function LogActivityModal({show, setShowModal, activities, userId, setUser, user
                             onChange={(event, newValue) => {
                                 setRating(newValue);
                             }}
+                            value={rating ? rating : 0}
                             highlightSelectedOnly
                         />
                     </Form.Group>

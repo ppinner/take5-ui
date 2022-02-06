@@ -6,12 +6,9 @@ import DropdownButton from "react-bootstrap/DropdownButton";
 import Dropdown from "react-bootstrap/Dropdown";
 import React from "react";
 
-function Header({showProfile, setShowProfile, setIsLoggedIn, setShowModal}) {
+function Header({showProfile, setShowProfile, setIsLoggedIn, setShowModal, setShowHistory}) {
     const toggleShowProfile = () => setShowProfile(!showProfile);
     const logout = () => setIsLoggedIn(false);
-    const showModal = () => {
-        setShowModal(true);
-    };
 
     return (
             <Row className="App-header mt-4">
@@ -35,9 +32,9 @@ function Header({showProfile, setShowProfile, setIsLoggedIn, setShowModal}) {
                             title="Actions"
                             id="actions-dropdown"
                         >
-                            <Dropdown.Item type="button" onClick={showModal}>Log an Activity</Dropdown.Item>
+                            <Dropdown.Item type="button" onClick={() => setShowModal(true)}>Log an Activity</Dropdown.Item>
                             <Dropdown.Item href="#">View Goal Progress</Dropdown.Item>
-                            <Dropdown.Item href="#">View Activity History</Dropdown.Item>
+                            <Dropdown.Item href="#" onClick={()=> setShowHistory(true)}>View Activity History</Dropdown.Item>
                             <Dropdown.Divider/>
                             <Dropdown.Item type="button" onClick={logout}>Logout</Dropdown.Item>
                         </DropdownButton>
