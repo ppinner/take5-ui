@@ -8,6 +8,7 @@ import Select from 'react-select';
 import {goals, emoticons} from "../constants";
 import Rating from '@mui/material/Rating';
 import PropTypes from "prop-types";
+import {dateForPicker, dateFromDateString} from "../ProfilePageContent";
 
 function IconContainer(props) {
     const {value, ...other} = props;
@@ -24,6 +25,7 @@ function LogActivityModal({show, setShowModal, activities, userId, setUser, user
     const [activity, setActivity] = useState(null);
     const [activityGoals, setActivityGoals] = useState([]);  //format [ 0: "Activity", 1: "Connection" ]
     const [reflection, setReflection] = useState("");
+    const [date, setDate] = useState(new Date());
 
     const handleClose = () => {
         clearModal();
@@ -36,7 +38,8 @@ function LogActivityModal({show, setShowModal, activities, userId, setUser, user
         setRating(0);
         setActivity(null);
         setEditing(null);
-    }
+        setDate(new Date())
+    };
 
     const selectActivity = (selected) => {
         //TODO - error checking on this?
@@ -60,6 +63,7 @@ function LogActivityModal({show, setShowModal, activities, userId, setUser, user
             setActivity(editing.activity);
             setActivityGoals(editing.activity.category);
             setReflection(editing.reflection);
+            setDate(dateForPicker(editing.date));
         } else {
             clearModal();
         }
@@ -75,7 +79,7 @@ function LogActivityModal({show, setShowModal, activities, userId, setUser, user
             },
             "reflection": reflection || "",
             "rating": rating ? rating : 0,
-            "date": new Date(),
+            "date": date ? date : new Date(),
             "id": editing ? editing.id : null
         };
 
@@ -165,6 +169,16 @@ function LogActivityModal({show, setShowModal, activities, userId, setUser, user
                                 onChange={(event) => {
                                     selectActivityGoals(event);
                                 }}
+                            />
+                        </Col>
+                    </Form.Group>
+                    <Form.Group>
+                        <Col>
+                            <Form.Control type="date" id="dateField"
+                                          defaultValue={dateForPicker(date)}
+                                          placeholderText={dateForPicker(date)}
+                                          onfocus={dateForPicker(date)}
+                                          onChange={(e) => setDate(dateFromDateString(e.target.value))}
                             />
                         </Col>
                     </Form.Group>

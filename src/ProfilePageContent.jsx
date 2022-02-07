@@ -15,11 +15,11 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 
 const toggleEditable = (editable, setEditable) => setEditable(!editable);
 
-const dateFromDateString = (dateString) => {
+export const dateFromDateString = (dateString) => {
     return moment(new Date(dateString)).format('YYYY-MM-DDT00:00:00.000Z');
 };
 
-const dateForPicker = (dateString) => {
+export const dateForPicker = (dateString) => {
     return moment(new Date(dateString)).format('YYYY-MM-DD')
 };
 
