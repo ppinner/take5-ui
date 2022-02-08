@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import React, {useEffect, useState} from "react";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
-import {Col, Container} from "react-bootstrap";
+import {Col} from "react-bootstrap";
 import Select from 'react-select';
 import Creatable from 'react-select/creatable';
 import {goals, emoticons} from "../constants";

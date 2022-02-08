@@ -115,9 +115,9 @@ function Page() {
                 />
                 {renderPageContent(showProfile, user, setUser, setShowLogActivityModal, activities)}
 
-                <ActivityHistoryModal show={showHistory} setShowHistory={setShowHistory} user={user}
+                {showHistory ? <ActivityHistoryModal show={showHistory} setShowHistory={setShowHistory} user={user}
                                       setShowActivityModal={setShowLogActivityModal} setUser={setUser}
-                                      setEditActivityLog={setEditActivityLog}/>
+                                      setEditActivityLog={setEditActivityLog}/> : null}
                 {showLogActivityModal ?
                     <LogActivityModal show={showLogActivityModal} setShowModal={setShowLogActivityModal}
                                       activities={activities} userId={userId}
@@ -128,8 +128,8 @@ function Page() {
                                                                 setShowCreateActivityModal={setCreateActivityModal}
                                                                 activities={activities} setActivities={setActivities}
                                                                 setShowActivityLogModal={setShowLogActivityModal}/> : null}
-                <PrivacyModal show={showPrivacy} setShowPrivacy={setShowPrivacy}/>
-                <HelpModal show={showHelp} setShowHelp={setShowHelp}/>
+                {showPrivacy ? <PrivacyModal show={showPrivacy} setShowPrivacy={setShowPrivacy}/> : null}
+                {showHelp ? <HelpModal show={showHelp} setShowHelp={setShowHelp}/> : null}
                 <Footer setShowPrivacy={setShowPrivacy} setShowHelp={setShowHelp}/>
             </Container>
         );
