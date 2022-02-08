@@ -10,6 +10,7 @@ import Login from "./login/Login";
 import PrivacyModal from "./modals/PrivacyModal";
 import HelpModal from "./modals/HelpModal";
 import ActivityHistoryModal from "./modals/ActivityHistoryModal";
+import CreateActivityModal from "./modals/CreateActivityModal";
 
 const renderPageContent = (showProfile, user, setUser, setShowModal, activities) => {
     if (showProfile) {
@@ -56,13 +57,14 @@ function Page() {
     const [showPrivacy, setShowPrivacy] = useState(false);
     const [editActivityLog, setEditActivityLog] = useState(null);
     const [showHelp, setShowHelp] = useState(false);
-    const [showModal, setShowModal] = useState(false);
+    const [showLogActivityModal, setShowLogActivityModal] = useState(false);
     const [showHistory, setShowHistory] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false); //TODO - implement loading icon
     const [error, setError] = useState(false); //TODO - implement error notifications
     const [userId, setUserId] = useState(null);
     const [user, setUser] = useState(null);
     const [activities, setActivities] = useState(null);
+    const [showCreateActivityModal, setCreateActivityModal] = useState(false);
     // const [userScore, setScore] = useState({
     //     connection: 0,
     //     mindfulness: 0,
@@ -108,20 +110,27 @@ function Page() {
                 <Header showProfile={showProfile}
                         setShowProfile={setShowProfile}
                         setIsLoggedIn={setIsLoggedIn}
-                        setShowModal={setShowModal}
+                        setShowModal={setShowLogActivityModal}
                         setShowHistory={setShowHistory}
                 />
-                {renderPageContent(showProfile, user, setUser, setShowModal, activities)}
+                {renderPageContent(showProfile, user, setUser, setShowLogActivityModal, activities)}
 
-                <LogActivityModal show={showModal} setShowModal={setShowModal} activities={activities} userId={userId}
-                                  setUser={setUser} user={user} getUpdatedScore={getUpdatedScoreForActivity}
-                                  editing={editActivityLog} setEditing={setEditActivityLog}/>
+                <ActivityHistoryModal show={showHistory} setShowHistory={setShowHistory} user={user}
+                                      setShowActivityModal={setShowLogActivityModal} setUser={setUser}
+                                      setEditActivityLog={setEditActivityLog}/>
+                {showLogActivityModal ?
+                    <LogActivityModal show={showLogActivityModal} setShowModal={setShowLogActivityModal}
+                                      activities={activities} userId={userId}
+                                      setUser={setUser} user={user} getUpdatedScore={getUpdatedScoreForActivity}
+                                      editing={editActivityLog} setEditing={setEditActivityLog}
+                                      setCreateActivityModal={setCreateActivityModal}/> : null}
+                {showCreateActivityModal ? <CreateActivityModal show={showCreateActivityModal}
+                                                                setShowCreateActivityModal={setCreateActivityModal}
+                                                                activities={activities} setActivities={setActivities}
+                                                                setShowActivityLogModal={setShowLogActivityModal}/> : null}
                 <PrivacyModal show={showPrivacy} setShowPrivacy={setShowPrivacy}/>
                 <HelpModal show={showHelp} setShowHelp={setShowHelp}/>
                 <Footer setShowPrivacy={setShowPrivacy} setShowHelp={setShowHelp}/>
-                <ActivityHistoryModal show={showHistory} setShowHistory={setShowHistory} user={user}
-                                      setShowActivityModal={setShowModal} setUser={setUser}
-                                      setEditActivityLog={setEditActivityLog}/>
             </Container>
         );
     }

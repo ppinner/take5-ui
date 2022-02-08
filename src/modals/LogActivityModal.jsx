@@ -3,8 +3,9 @@ import Button from "react-bootstrap/Button";
 import React, {useEffect, useState} from "react";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
-import {Col} from "react-bootstrap";
+import {Col, Container} from "react-bootstrap";
 import Select from 'react-select';
+import Creatable from 'react-select/creatable';
 import {goals, emoticons} from "../constants";
 import Rating from '@mui/material/Rating';
 import PropTypes from "prop-types";
@@ -19,7 +20,8 @@ IconContainer.propTypes = {
     value: PropTypes.number.isRequired,
 };
 
-function LogActivityModal({show, setShowModal, activities, userId, setUser, user, getUpdatedScore, editing, setEditing}) {
+function LogActivityModal({show, setShowModal, activities, userId, setUser, user, getUpdatedScore, editing,
+                              setEditing, setCreateActivityModal}) {
     const [showError, setShowError] = useState(false); //TODO - implement error handling
     const [rating, setRating] = useState(0);
     const [activity, setActivity] = useState(null);
@@ -28,8 +30,8 @@ function LogActivityModal({show, setShowModal, activities, userId, setUser, user
     const [date, setDate] = useState(new Date());
 
     const handleClose = () => {
-        clearModal();
         setShowModal(false);
+        clearModal();
     };
 
     const clearModal = () => {
@@ -58,7 +60,7 @@ function LogActivityModal({show, setShowModal, activities, userId, setUser, user
     };
 
     useEffect(() => {
-        if(editing != null){
+        if (editing != null) {
             setRating(editing.rating);
             setActivity(editing.activity);
             setActivityGoals(editing.activity.category);
@@ -114,107 +116,113 @@ function LogActivityModal({show, setShowModal, activities, userId, setUser, user
     };
 
     return (
-        <Modal
-            show={show}
-            backdrop="static"
-            keyboard={false}
-            dialogClassName="modal-80w"
-            centered
-        >
-            <link rel="stylesheet" href="bootstrap-multiselect.css" type="text/css"/>
-            <Modal.Header>
-                <Modal.Title>{editing != null ? "Edit Activity Log" : "Log an Activity"}</Modal.Title>
-            </Modal.Header>
+            <Modal
+                show={show}
+                backdrop="static"
+                keyboard={false}
+                dialogClassName="modal-80w"
+                centered
+            >
+                <link rel="stylesheet" href="bootstrap-multiselect.css" type="text/css"/>
+                <Modal.Header>
+                    <Modal.Title>{editing != null ? "Edit Activity Log" : "Log an Activity"}</Modal.Title>
+                </Modal.Header>
 
-            <Modal.Body>
-                <Form className="personalInfo">
-                    <Form.Group className="mb-3 align-items-center" controlId="activityInput">
-                        <Col>
-                            <Select
-                                placeholder={"Activity Name"}
-                                name="activity"
-                                options={
-                                    Object.values(activities).map(function (activity) {
-                                        return {
-                                            value: activity.id, label: activity.name
+                <Modal.Body>
+                    <Form className="personalInfo">
+                        <Form.Group className="mb-3 align-items-center" controlId="activityInput">
+                            <Col>
+                                <Creatable
+                                    placeholder={"Activity Name"}
+                                    name="activity"
+                                    options={
+                                        Object.values(activities).map(function (activity) {
+                                            return {
+                                                value: activity.id, label: activity.name
+                                            }
+                                        })
+                                    }
+                                    onChange={event => {
+                                        if (event.__isNew__) {
+                                            setCreateActivityModal(true);
+                                            setShowModal(false);
+                                        } else {
+                                            selectActivity(event);
                                         }
-                                    })}
-                                onChange={event => {
-                                    selectActivity(event);
-                                }}
-                                value={activity ? {
+                                    }}
+                                    value={activity ? {
                                         value: activity.id, label: activity.name
                                     } : null}
-                            />
-                        </Col>
-                    </Form.Group>
-                    <Form.Group className="mb-3 align-items-center" controlId="goalInput">
-                        <Col>
-                            <Select
-                                placeholder={"Associated goal(s)"}
-                                isMulti
-                                name="goals"
-                                options={
-                                    Object.keys(goals).map(function (key) {
-                                        return {
-                                            value: key, label: goals[key]
-                                        }
-                                    })}
-                                value={
-                                    activityGoals.map(function (key) {
-                                        return {
-                                            value: key, label: goals[key]
-                                        }
-                                    })}
-                                onChange={(event) => {
-                                    selectActivityGoals(event);
+                                />
+                            </Col>
+                        </Form.Group>
+                        <Form.Group className="mb-3 align-items-center" controlId="goalInput">
+                            <Col>
+                                <Select
+                                    placeholder={"Associated goal(s)"}
+                                    isMulti
+                                    name="goals"
+                                    options={
+                                        Object.keys(goals).map(function (key) {
+                                            return {
+                                                value: key, label: goals[key]
+                                            }
+                                        })}
+                                    value={
+                                        activityGoals.map(function (key) {
+                                            return {
+                                                value: key, label: goals[key]
+                                            }
+                                        })}
+                                    onChange={(event) => {
+                                        selectActivityGoals(event);
+                                    }}
+                                />
+                            </Col>
+                        </Form.Group>
+                        <Form.Group>
+                            <Col>
+                                <Form.Control type="date" id="dateField"
+                                              defaultValue={dateForPicker(date)}
+                                              placeholderText={dateForPicker(date)}
+                                              onfocus={dateForPicker(date)}
+                                              onChange={(e) => setDate(dateFromDateString(e.target.value))}
+                                />
+                            </Col>
+                        </Form.Group>
+                        <Form.Group className="mb-3 mt-3 align-items-center" controlId="reflection">
+                            <Form.Label>Reflection:</Form.Label>
+                            <Form.Text className="mx-3">(Optional)</Form.Text>
+                            <Form.Control as="textarea"
+                                          onChange={event => {
+                                              setReflection(event.target.value);
+                                          }}
+                                          value={reflection ? reflection : ""}
+                                          rows={3} placeholder='Any memorable moments? Personal wins?'/>
+                        </Form.Group>
+                        <Form.Group as={Col} className="d-flex align-content-center">
+                            <Form.Label>Rating:</Form.Label>
+                            <Rating
+                                className="mx-3"
+                                name="activityRating"
+                                size="large"
+                                emptyIcon={null}
+                                IconContainerComponent={IconContainer}
+                                onChange={(event, newValue) => {
+                                    setRating(newValue);
                                 }}
+                                value={rating ? rating : 0}
+                                highlightSelectedOnly
                             />
-                        </Col>
-                    </Form.Group>
-                    <Form.Group>
-                        <Col>
-                            <Form.Control type="date" id="dateField"
-                                          defaultValue={dateForPicker(date)}
-                                          placeholderText={dateForPicker(date)}
-                                          onfocus={dateForPicker(date)}
-                                          onChange={(e) => setDate(dateFromDateString(e.target.value))}
-                            />
-                        </Col>
-                    </Form.Group>
-                    <Form.Group className="mb-3 mt-3 align-items-center" controlId="reflection">
-                        <Form.Label>Reflection:</Form.Label>
-                        <Form.Text className="mx-3">(Optional)</Form.Text>
-                        <Form.Control as="textarea"
-                                      onChange={event => {
-                                          setReflection(event.target.value);
-                                      }}
-                                      value={reflection ? reflection : ""}
-                                      rows={3} placeholder='Any memorable moments? Personal wins?'/>
-                    </Form.Group>
-                    <Form.Group as={Col} className="d-flex align-content-center">
-                        <Form.Label>Rating:</Form.Label>
-                        <Rating
-                            className="mx-3"
-                            name="activityRating"
-                            size="large"
-                            emptyIcon={null}
-                            IconContainerComponent={IconContainer}
-                            onChange={(event, newValue) => {
-                                setRating(newValue);
-                            }}
-                            value={rating ? rating : 0}
-                            highlightSelectedOnly
-                        />
-                    </Form.Group>
-                </Form>
-            </Modal.Body>
+                        </Form.Group>
+                    </Form>
+                </Modal.Body>
 
-            <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>Close</Button>
-                <Button variant="primary" onClick={() => submitActivity(userId)}>Submit</Button>
-            </Modal.Footer>
-        </Modal>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleClose}>Close</Button>
+                    <Button variant="primary" onClick={() => submitActivity(userId)}>Submit</Button>
+                </Modal.Footer>
+            </Modal>
     );
 }
 

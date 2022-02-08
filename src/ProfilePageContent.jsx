@@ -81,7 +81,7 @@ function ProfilePageContent({user, setUser, activities}) {
                     const mostPopularId = Object.keys(activityCounts).reduce((max, key) => {
                         return ((max === undefined) || activityCounts[key] > activityCounts[max]) ? +key : max
                     });
-                    return activities.find((activity) => activity.id === mostPopularId).name ;
+                    return (activities.find((activity) => activity.id === mostPopularId).name) ?  (activities.find((activity) => activity.id === mostPopularId).name) : null;
                 });
 
                 setMostPopularGoal(() => {
