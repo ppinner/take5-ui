@@ -57,6 +57,7 @@ function ActivityHistoryModal({show, setShowHistory, user, setShowActivityModal,
     const editLog = (log) => {
         setEditActivityLog(log);
         setShowActivityModal(true);
+        setShowHistory(false);
     };
 
     return (

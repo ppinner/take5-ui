@@ -119,11 +119,11 @@ function Page() {
                                       setShowActivityModal={setShowLogActivityModal} setUser={setUser}
                                       setEditActivityLog={setEditActivityLog}/> : null}
                 {showLogActivityModal ?
-                    <LogActivityModal show={showLogActivityModal} setShowModal={setShowLogActivityModal}
+                    <LogActivityModal show={showLogActivityModal} setShowLogActivityModal={setShowLogActivityModal}
                                       activities={activities} userId={userId}
                                       setUser={setUser} user={user} getUpdatedScore={getUpdatedScoreForActivity}
                                       editing={editActivityLog} setEditing={setEditActivityLog}
-                                      setCreateActivityModal={setCreateActivityModal}/> : null}
+                                      setCreateActivityModal={setCreateActivityModal} setShowHistoryModal={setShowHistory}/> : null}
                 {showCreateActivityModal ? <CreateActivityModal show={showCreateActivityModal}
                                                                 setShowCreateActivityModal={setCreateActivityModal}
                                                                 activities={activities} setActivities={setActivities}

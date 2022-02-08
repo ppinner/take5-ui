@@ -20,8 +20,8 @@ IconContainer.propTypes = {
     value: PropTypes.number.isRequired,
 };
 
-function LogActivityModal({show, setShowModal, activities, userId, setUser, user, getUpdatedScore, editing,
-                              setEditing, setCreateActivityModal}) {
+function LogActivityModal({show, setShowLogActivityModal, activities, userId, setUser, user, getUpdatedScore, editing,
+                              setEditing, setShowCreateActivityModal, setShowHistoryModal}) {
     const [showError, setShowError] = useState(false); //TODO - implement error handling
     const [rating, setRating] = useState(0);
     const [activity, setActivity] = useState(null);
@@ -30,7 +30,11 @@ function LogActivityModal({show, setShowModal, activities, userId, setUser, user
     const [date, setDate] = useState(new Date());
 
     const handleClose = () => {
-        setShowModal(false);
+        setShowLogActivityModal(false);
+        if(editing != null) {
+            setShowHistoryModal(true);
+            setEditing(null);
+        }
         clearModal();
     };
 
@@ -39,7 +43,6 @@ function LogActivityModal({show, setShowModal, activities, userId, setUser, user
         setReflection("");
         setRating(0);
         setActivity(null);
-        setEditing(null);
         setDate(new Date())
     };
 
@@ -144,8 +147,8 @@ function LogActivityModal({show, setShowModal, activities, userId, setUser, user
                                     }
                                     onChange={event => {
                                         if (event.__isNew__) {
-                                            setCreateActivityModal(true);
-                                            setShowModal(false);
+                                            setShowLogActivityModal(false);
+                                            setShowCreateActivityModal(true);
                                         } else {
                                             selectActivity(event);
                                         }
@@ -184,7 +187,6 @@ function LogActivityModal({show, setShowModal, activities, userId, setUser, user
                             <Col>
                                 <Form.Control type="date" id="dateField"
                                               defaultValue={dateForPicker(date)}
-                                              placeholderText={dateForPicker(date)}
                                               onfocus={dateForPicker(date)}
                                               onChange={(e) => setDate(dateFromDateString(e.target.value))}
                                 />
