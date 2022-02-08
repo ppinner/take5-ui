@@ -78,29 +78,41 @@ function ProfilePageContent({user, setUser, activities}) {
 
             if (Object.keys(activityCounts).length > 0 && activities.length > 0) {
                 setMostPopularActivity(() => {
-                    const mostPopularId = Object.keys(activityCounts).reduce((max, key) => {
-                        return ((max === undefined) || activityCounts[key] > activityCounts[max]) ? +key : max
+                    try {
+                        const mostPopularId = Object.keys(activityCounts).reduce((max, key) => {
+                            return ((max === undefined) || activityCounts[key] > activityCounts[max]) ? +key : max
+                        });
+                        return (activities.find((activity) => activity.id === mostPopularId).name) ? (activities.find((activity) => activity.id === mostPopularId).name) : null;
+                    } catch {
+                        return null
+                    }
                     });
-                    return (activities.find((activity) => activity.id === mostPopularId).name) ?  (activities.find((activity) => activity.id === mostPopularId).name) : null;
-                });
 
                 setMostPopularGoal(() => {
+                    try {
                     const mostPopularGoal = Object.keys(goalCounts).reduce((max, key) => {
                         return (max === undefined || goalCounts[key] > goalCounts[max]) ? +key : max
                     });
                     return goals[mostPopularGoal];
+                    } catch {
+                        return null
+                    }
                 });
 
                 setLeastEngagedGoal(() => {
-                    Object.keys(goals).map((goal)=> {
-                        if(goalCounts[goal] === undefined)
-                            goalCounts[goal] = 0;
-                    });
+                    try {
+                        Object.keys(goals).map((goal) => {
+                            if (goalCounts[goal] === undefined)
+                                goalCounts[goal] = 0;
+                        });
 
-                    const leastPopularGoal = Object.keys(goals).reduce((min, key) => {
-                        return (min === undefined || goalCounts[key] < goalCounts[min]) ? key : min
-                    });
-                    return goals[leastPopularGoal];
+                        const leastPopularGoal = Object.keys(goals).reduce((min, key) => {
+                            return (min === undefined || goalCounts[key] < goalCounts[min]) ? key : min
+                        });
+                        return goals[leastPopularGoal];
+                    } catch {
+                        return null
+                    }
                 });
 
                 setMostImprovedGoal(() => {

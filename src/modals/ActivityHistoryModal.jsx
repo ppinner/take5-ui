@@ -15,7 +15,7 @@ import TablePagination from "@mui/material/TablePagination/TablePagination";
 
 const Moment = require('moment');
 
-function ActivityHistoryModal({show, setShowHistory, user, setShowActivityModal, setUser, setEditActivityLog}) {
+function ActivityHistoryModal({show, setShowHistory, user, setShowActivityModal, setUser, setEditActivityLog, calculateScore}) {
     const [entriesPerPage, setEntriesPerPage] = useState(5);
     const [currentPage, setPage] = useState(0);
 
@@ -47,6 +47,7 @@ function ActivityHistoryModal({show, setShowHistory, user, setShowActivityModal,
                     const error = (data && data.message) || res.status;
                     return Promise.reject(error);
                 }
+                calculateScore();
                 setUser(data);
             })
             .catch(error => {

@@ -7,10 +7,9 @@ import RadarChart from 'react-svg-radar-chart';
 import 'react-svg-radar-chart/build/css/index.css';
 import {goals} from "../constants";
 
-function HomePageContent({user, setShowModal, getEntriesForPastWeek}) {
+function HomePageContent({userScore, user, setShowModal, getEntriesForPastWeek}) {
     const [responseMessage, setResponseMessage] = useState("Welcome back");
     const [graphData, setGraphData] = useState([]);
-    const [userScore, setScore] = useState(user.scores);
 
     useEffect(() => {
         const responseMessage = (() => {
@@ -25,14 +24,17 @@ function HomePageContent({user, setShowModal, getEntriesForPastWeek}) {
         });
         setResponseMessage(responseMessage);
 
+    }, [user]);
+
+    useEffect(()=> {
         setGraphData([
             {
                 data: {
-                    mindfulness: user.scores.mindfulness,
-                    connection: user.scores.connection,
-                    physicalActivity: user.scores.physicalActivity,
-                    learning: user.scores.learning,
-                    giving: user.scores.giving
+                    mindfulness: userScore.mindfulness,
+                    connection: userScore.connection,
+                    physicalActivity: userScore.physicalActivity,
+                    learning: userScore.learning,
+                    giving: userScore.giving
                 },
                 meta: {
                     color: '#5D88BB',
@@ -41,20 +43,6 @@ function HomePageContent({user, setShowModal, getEntriesForPastWeek}) {
             }
         ])
     }, [user]);
-
-    useEffect(() => {
-        if(user !== null && user.scores != null) {
-            const requestOptions = {
-                method: 'PUT',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(user.scores)
-            };
-
-            fetch(`http://localhost:8081/api/users/${user.id}/score`, requestOptions)
-                .then(res => res.json())
-                .catch((error) => console.log(error))
-        }
-    }, [userScore]);
 
     const activityCount = () => {
         return getEntriesForPastWeek(user).length

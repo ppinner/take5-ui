@@ -11,28 +11,39 @@ import PrivacyModal from "./modals/PrivacyModal";
 import HelpModal from "./modals/HelpModal";
 import ActivityHistoryModal from "./modals/ActivityHistoryModal";
 import CreateActivityModal from "./modals/CreateActivityModal";
+import moment from "moment";
 
-const renderPageContent = (showProfile, user, setUser, setShowModal, activities) => {
+const today = new Date();
+const weekAgo = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
+
+const renderPageContent = (showProfile, user, setUser, setShowModal, activities, userScore) => {
     if (showProfile) {
         return <ProfilePageContent user={user} setUser={setUser} activities={activities}/>;
     } else {
-        return <HomePageContent user={user} setShowModal={setShowModal} getEntriesForPastWeek={getEntriesForPastWeek}/>;
+        return <HomePageContent user={user} userScore={userScore} today={today} setShowModal={setShowModal}
+                                getEntriesForPastWeek={getEntriesForPastWeek}/>;
     }
 };
 
-//TODO - make time period adjustable?
 const getEntriesForPastWeek = (user) => {
     const today = new Date();
     const weekAgo = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
-    let weeklyActivities;
+
+    return getEntriesForTimePeriod(user, today, weekAgo)
+};
+
+const getEntriesForTimePeriod = (user, start, end) => {
+    const today = new Date(start);
+    const weekAgo = new Date(end);
+    let activities;
 
     if (user.activityLog != null) {
-        weeklyActivities = user.activityLog.filter(log => {
+        activities = user.activityLog.filter(log => {
             return weekAgo <= log.date <= today
         });
     }
 
-    return weeklyActivities
+    return activities
 };
 
 const getUpdatedScoreForActivity = (focus, currentScore, goals) => {
@@ -50,6 +61,13 @@ const getUpdatedScoreForActivity = (focus, currentScore, goals) => {
     return score
 };
 
+const startScores = {
+    connection: 0,
+    mindfulness: 0,
+    physicalActivity: 0,
+    giving: 0,
+    learning: 0
+};
 
 function Page() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -65,34 +83,34 @@ function Page() {
     const [user, setUser] = useState(null);
     const [activities, setActivities] = useState(null);
     const [showCreateActivityModal, setCreateActivityModal] = useState(false);
-    // const [userScore, setScore] = useState({
-    //     connection: 0,
-    //     mindfulness: 0,
-    //     physicalActivity: 0,
-    //     giving: 0,
-    //     learning: 0
-    // });
+    const [userScore, setScore] = useState(startScores);
 
-
-    // const calculateInitialScore = () => {
-    //     //TODO - calculate current score from this week's entries only instead of using previous DB
-    //     getEntriesForPastWeek(user).map(entry => {
-    //         console.log(entry, userScore)
-    //         setScore(getUpdatedScoreForActivity(user.focus, userScore, entry.activity.category))
-    //     });
-    //     const userUpdated = user;
-    //     userUpdated.scores = userScore;
-    //     setUser(userUpdated);
-    // };
+    const calculateScore = (start, end) => {
+        const counter = {
+            connection: 0,
+            mindfulness: 0,
+            physicalActivity: 0,
+            giving: 0,
+            learning: 0
+        };
+        getEntriesForTimePeriod(user, start, end).map(entry => {
+            getUpdatedScoreForActivity(user.focus, counter, entry.activity.category)
+        });
+        setScore(counter);
+    };
 
     useEffect(() => {
         if (userId != null) {
             fetch(`http://localhost:8081/api/users/${userId}`)
                 .then(res => res.json())
                 .then(result => {
-                    setUser(result)
+                    let userUpdate = result;
+                    calculateScore(today, weekAgo);
+                    const scoreKey = moment(today).format('YYYY-MM-DDT00:00:00.000+00:00');
+                    userUpdate.scores[scoreKey] = userScore;
+                    setUser(userUpdate)
                 })
-                .catch((error) => console.log(error))
+                .catch((error) => console.log(error));
         }
     }, [userId]);
 
@@ -103,8 +121,24 @@ function Page() {
             .catch((error) => console.log(error));
     }, []);
 
+    useEffect(() => {
+        if (user !== null && userScore != null) {
+            const requestOptions = {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    date: today,
+                    score: userScore
+                })
+            };
+
+            fetch(`http://localhost:8081/api/users/${user.id}/score`, requestOptions)
+                .then(res => res.json())
+                .catch((error) => console.log(error))
+        }
+    }, [userScore]);
+
     if (isLoggedIn) {
-        // calculateInitialScore();
         return (
             <Container className="App">
                 <Header showProfile={showProfile}
@@ -113,17 +147,20 @@ function Page() {
                         setShowModal={setShowLogActivityModal}
                         setShowHistory={setShowHistory}
                 />
-                {renderPageContent(showProfile, user, setUser, setShowLogActivityModal, activities)}
+                {renderPageContent(showProfile, user, setUser, setShowLogActivityModal, activities, userScore)}
 
                 {showHistory ? <ActivityHistoryModal show={showHistory} setShowHistory={setShowHistory} user={user}
-                                      setShowActivityModal={setShowLogActivityModal} setUser={setUser}
-                                      setEditActivityLog={setEditActivityLog}/> : null}
+                                                     setShowActivityModal={setShowLogActivityModal} setUser={setUser}
+                                                     setEditActivityLog={setEditActivityLog}
+                                                     calculateScore={() => calculateScore(today, weekAgo)}/> : null}
                 {showLogActivityModal ?
                     <LogActivityModal show={showLogActivityModal} setShowLogActivityModal={setShowLogActivityModal}
                                       activities={activities} userId={userId}
-                                      setUser={setUser} user={user} getUpdatedScore={getUpdatedScoreForActivity}
+                                      setUser={setUser} user={user}
+                                      calculateScore={() => calculateScore(today, weekAgo)}
                                       editing={editActivityLog} setEditing={setEditActivityLog}
-                                      setCreateActivityModal={setCreateActivityModal} setShowHistoryModal={setShowHistory}/> : null}
+                                      setCreateActivityModal={setCreateActivityModal}
+                                      setShowHistoryModal={setShowHistory}/> : null}
                 {showCreateActivityModal ? <CreateActivityModal show={showCreateActivityModal}
                                                                 setShowCreateActivityModal={setCreateActivityModal}
                                                                 activities={activities} setActivities={setActivities}

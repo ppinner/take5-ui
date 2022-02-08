@@ -20,7 +20,7 @@ IconContainer.propTypes = {
     value: PropTypes.number.isRequired,
 };
 
-function LogActivityModal({show, setShowLogActivityModal, activities, userId, setUser, user, getUpdatedScore, editing,
+function LogActivityModal({show, setShowLogActivityModal, activities, userId, setUser, user, calculateScore, editing,
                               setEditing, setShowCreateActivityModal, setShowHistoryModal}) {
     const [showError, setShowError] = useState(false); //TODO - implement error handling
     const [rating, setRating] = useState(0);
@@ -104,7 +104,7 @@ function LogActivityModal({show, setShowLogActivityModal, activities, userId, se
                         const error = (data && data.message) || res.status;
                         return Promise.reject(error);
                     }
-                    data.scores = getUpdatedScore(user, user.scores, activityGoals);
+                    calculateScore();
                     setUser(data);
                     handleClose();
                 })
