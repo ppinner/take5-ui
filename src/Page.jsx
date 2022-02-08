@@ -159,7 +159,7 @@ function Page() {
                                       setUser={setUser} user={user}
                                       calculateScore={() => calculateScore(today, weekAgo)}
                                       editing={editActivityLog} setEditing={setEditActivityLog}
-                                      setCreateActivityModal={setCreateActivityModal}
+                                      setShowCreateActivityModal={setCreateActivityModal}
                                       setShowHistoryModal={setShowHistory}/> : null}
                 {showCreateActivityModal ? <CreateActivityModal show={showCreateActivityModal}
                                                                 setShowCreateActivityModal={setCreateActivityModal}
