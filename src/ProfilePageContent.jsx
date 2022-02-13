@@ -16,7 +16,7 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 const toggleEditable = (editable, setEditable) => setEditable(!editable);
 
 export const dateFromDateString = (dateString) => {
-    return moment(new Date(dateString)).format('YYYY-MM-DDT00:00:00.000Z');
+    return moment(new Date(dateString)).format('YYYY-MM-DDT00:00:00.000');
 };
 
 export const dateForPicker = (dateString) => {
@@ -33,10 +33,13 @@ function ProfilePageContent({user, setUser, activities}) {
     const [name, setName] = useState(user.name);
     const [dob, setDob] = useState(user.dob);
     const [goal, setGoal] = useState(user.focus);
+    const [goalChanged, setGoalChanged] = useState(false);
     const [mostPopularGoal, setMostPopularGoal] = useState();
     const [mostPopularActivity, setMostPopularActivity] = useState();
     const [leastEngagedGoal, setLeastEngagedGoal] = useState();
     const [mostImprovedGoal, setMostImprovedGoal] = useState();
+    const today = new Date();
+    const monthAgo = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate()); //TODO - duplicated, move to utils
 
     const saveChanges = () => {
         //TODO - error handling with incorrect inputs
@@ -46,6 +49,10 @@ function ProfilePageContent({user, setUser, activities}) {
         if (dob != NaN)
             updatedUser.dob = dateFromDateString(dob);
         updatedUser.focus = goal;
+
+        if(goalChanged){
+            updatedUser.focusStart = today;
+        }
 
         setUser(updatedUser);
         const requestOptions = {
@@ -116,8 +123,32 @@ function ProfilePageContent({user, setUser, activities}) {
                 });
 
                 setMostImprovedGoal(() => {
-                    return null
-                    //TODO - calculate score from a month ago vs score now - to do when going goal progress modal
+                    try {
+                        let diffs = {
+                            connection: 0,
+                            mindfulness: 0,
+                            learning: 0,
+                            giving: 0,
+                            physicalActivity: 0
+                        };
+                        let lastMonthScores = Object.entries(user.scores).filter((scoreLog) => {
+                            return moment(scoreLog[0]) >= moment(monthAgo)
+                        }).sort((a, b) => {
+                            return moment(a[0]) - moment(b[0]);
+                        })[0];
+
+                        Object.keys(goals).map(goal => {
+                            diffs[goal] = Math.abs(user.scores[dateFromDateString(new Date())][goal] - lastMonthScores[1][goal])
+                        });
+
+                        const mostImprovedGoal = Object.keys(goals).reduce((max, key) => {
+                            return (max === undefined || diffs[key] > diffs[max]) ? +key : max
+                        });
+                        return goals[mostImprovedGoal]
+                    } catch (e){
+                        console.log(e);
+                        return null
+                    }
                 })
             }
         }
@@ -193,7 +224,10 @@ function ProfilePageContent({user, setUser, activities}) {
                                     className="goalSelect"
                                     isDisabled={!editable}
                                     defaultValue={user.focus}
-                                    onChange={(e) => setGoal(e.value)}
+                                    onChange={(e) => {
+                                        setGoalChanged(true);
+                                        setGoal(e.value)
+                                    }}
                                 />
                             </Col>
                         </Form.Group>
@@ -214,7 +248,7 @@ function ProfilePageContent({user, setUser, activities}) {
                     <Card className="personalityResults">
                         <Card.Body>
                             <Row>
-                                {
+                                { user.personality ?
                                     Object.entries(user.personality).map(trait => {
                                         return (
                                             <OverlayTrigger
@@ -230,14 +264,14 @@ function ProfilePageContent({user, setUser, activities}) {
                                                 </Card>
                                             </OverlayTrigger>
                                         )
-                                    })
+                                    }) : "Take the personality quiz by clicking the link below"
                                 }
                             </Row>
                         </Card.Body>
                     </Card>
                     <Button variant="link" className="personalityTestLink mb-2"
                             onClick={() => setTakePersonalityTest(true)}>
-                        Retake Personality Test</Button>
+                        {user.personality ? "Retake Personality Test" : "Take Personality Test"}</Button>
                 </Col>
                 <Col className="">
                     <Card className="activitySummary">
@@ -255,7 +289,7 @@ function ProfilePageContent({user, setUser, activities}) {
                             </Row>
                             <Row>
                                 <Card className="summaryStat col">
-                                    <Card.Title>Most Improved Goal:</Card.Title>
+                                    <Card.Title>Most Improved this Month:</Card.Title>
                                     <Card.Text>{mostImprovedGoal ? mostImprovedGoal : "..."}</Card.Text>
                                 </Card>
                                 <Card className="summaryStat col">

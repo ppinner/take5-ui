@@ -12,16 +12,17 @@ import HelpModal from "./modals/HelpModal";
 import ActivityHistoryModal from "./modals/ActivityHistoryModal";
 import CreateActivityModal from "./modals/CreateActivityModal";
 import moment from "moment";
+import GoalProgressModal from "./modals/GoalProgressModal";
 
 const today = new Date();
 const weekAgo = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
 
-const renderPageContent = (showProfile, user, setUser, setShowModal, activities, userScore) => {
+const renderPageContent = (showProfile, user, setUser, setShowModal, activities, userScore, setShowGoalProgress) => {
     if (showProfile) {
         return <ProfilePageContent user={user} setUser={setUser} activities={activities}/>;
     } else {
         return <HomePageContent user={user} userScore={userScore} today={today} setShowModal={setShowModal}
-                                getEntriesForPastWeek={getEntriesForPastWeek}/>;
+                                getEntriesForPastWeek={getEntriesForPastWeek} setShowGoalProgress={setShowGoalProgress}/>;
     }
 };
 
@@ -72,6 +73,7 @@ const startScores = {
 function Page() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [showProfile, setShowProfile] = useState(false);
+    const [showGoalProgress, setShowGoalProgress] = useState(false);
     const [showPrivacy, setShowPrivacy] = useState(false);
     const [editActivityLog, setEditActivityLog] = useState(null);
     const [showHelp, setShowHelp] = useState(false);
@@ -97,17 +99,18 @@ function Page() {
             getUpdatedScoreForActivity(user.focus, counter, entry.activity.category)
         });
         setScore(counter);
+        return counter;
     };
 
     useEffect(() => {
-        if (userId != null) {
+        if (userId != null ) {
             fetch(`http://localhost:8081/api/users/${userId}`)
                 .then(res => res.json())
                 .then(result => {
                     let userUpdate = result;
-                    calculateScore(today, weekAgo);
+                    const score = calculateScore(today, weekAgo);
                     const scoreKey = moment(today).format('YYYY-MM-DDT00:00:00.000+00:00');
-                    userUpdate.scores[scoreKey] = userScore;
+                    userUpdate.scores[scoreKey] = score;
                     setUser(userUpdate)
                 })
                 .catch((error) => console.log(error));
@@ -146,8 +149,9 @@ function Page() {
                         setIsLoggedIn={setIsLoggedIn}
                         setShowModal={setShowLogActivityModal}
                         setShowHistory={setShowHistory}
+                        setShowGoalProgress={setShowGoalProgress}
                 />
-                {renderPageContent(showProfile, user, setUser, setShowLogActivityModal, activities, userScore)}
+                {renderPageContent(showProfile, user, setUser, setShowLogActivityModal, activities, userScore, setShowGoalProgress)}
 
                 {showHistory ? <ActivityHistoryModal show={showHistory} setShowHistory={setShowHistory} user={user}
                                                      setShowActivityModal={setShowLogActivityModal} setUser={setUser}
@@ -167,6 +171,8 @@ function Page() {
                                                                 setShowActivityLogModal={setShowLogActivityModal}/> : null}
                 {showPrivacy ? <PrivacyModal show={showPrivacy} setShowPrivacy={setShowPrivacy}/> : null}
                 {showHelp ? <HelpModal show={showHelp} setShowHelp={setShowHelp}/> : null}
+                {showGoalProgress ? <GoalProgressModal show={showGoalProgress} setShowProgress={setShowGoalProgress}
+                                                       user={user}/> : null}
                 <Footer setShowPrivacy={setShowPrivacy} setShowHelp={setShowHelp}/>
             </Container>
         );

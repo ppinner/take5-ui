@@ -7,7 +7,7 @@ import RadarChart from 'react-svg-radar-chart';
 import 'react-svg-radar-chart/build/css/index.css';
 import {goals} from "../constants";
 
-function HomePageContent({userScore, user, setShowModal, getEntriesForPastWeek}) {
+function HomePageContent({userScore, user, setShowModal, getEntriesForPastWeek, setShowGoalProgress}) {
     const [responseMessage, setResponseMessage] = useState("Welcome back");
     const [graphData, setGraphData] = useState([]);
 
@@ -26,7 +26,7 @@ function HomePageContent({userScore, user, setShowModal, getEntriesForPastWeek})
 
     }, [user]);
 
-    useEffect(()=> {
+    useEffect(() => {
         setGraphData([
             {
                 data: {
@@ -53,7 +53,7 @@ function HomePageContent({userScore, user, setShowModal, getEntriesForPastWeek})
             <Row className="greeting">
                 <Col xs={1}/>
                 <Col>
-                    <h1>Hello, {user.name}</h1>
+                    <h1>Hello, {user ? user.name : ""}</h1>
                     <text>You've
                         tracked <strong>{activityCount()}</strong> {activityCount() === 1 ? "activity" : "activities"} this
                         week. {responseMessage}</text>
@@ -74,7 +74,8 @@ function HomePageContent({userScore, user, setShowModal, getEntriesForPastWeek})
                                 onClick={() => setShowModal(true)}>
                             Log an Activity
                         </Button>
-                        <Button className="my-1 secondaryButton" variant="outline-secondary">View Goal Progress</Button>
+                        <Button className="my-1 secondaryButton" variant="outline-secondary"
+                                onClick={() => setShowGoalProgress(true)}>View Goal Progress</Button>
                     </Row>
                     <Row className="recommendationSection mt-5">
                         <h4>Recommended for you...</h4>
