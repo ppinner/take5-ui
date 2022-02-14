@@ -4,7 +4,8 @@ import React, {useEffect, useState} from "react";
 import Modal from "react-bootstrap/Modal";
 import moment from "moment";
 import {goals} from "../constants";
-import {Line, Scatter} from "react-chartjs-2";
+import {Scatter} from "react-chartjs-2";
+import 'chartjs-adapter-moment';
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 
@@ -30,10 +31,9 @@ function GoalProgressModal({show, setShowProgress, user}) {
     }, [user]);
 
     const lineOptions = {
-        //TODO - solve weird x axis has too many ticks/points dont match up to ticks
         scales: {
             x: {
-                type: "linear",
+                type: "time",
                 title: {
                     display: true,
                     text: 'Date'
@@ -44,17 +44,26 @@ function GoalProgressModal({show, setShowProgress, user}) {
                     }
                 },
                 time: {
-                    unit: 'day',
+                    unit: "day",
+                    unitStepSize: 1000,
                     displayFormats: {
-                        'day': 'MMM DD'
+                        millisecond: 'MMM DD',
+                        second: 'MMM DD',
+                        minute: 'MMM DD',
+                        hour: 'MMM DD',
+                        day: 'MMM DD',
+                        week: 'MMM DD',
+                        month: 'MMM DD',
+                        quarter: 'MMM DD',
+                        year: 'MMM DD',
                     }
                 },
-                min: moment(user.focusStart).format("MMM Do")
+                min: user.focusStart
             },
             y: {
                 type: "linear",
-                min: 0,
-                max: 1,
+                suggestedMin: 0,
+                suggestedMax: 1,
                 ticks: {
                     stepSize: 0.1
                 },
@@ -77,8 +86,8 @@ function GoalProgressModal({show, setShowProgress, user}) {
                 label: `${goals[user.focus]}`,
                 data: graphData,
                 showLine: true,
-                backgroundColor: "#528CDE",
-                borderColor: "#528CDE",
+                backgroundColor: "#5D88BB",
+                borderColor: "#5D88BB",
                 borderWidth: 2
             }
         ]
@@ -94,7 +103,6 @@ function GoalProgressModal({show, setShowProgress, user}) {
         let sum_yy = 0;
 
         for (let i = 0; i < y.length; i++) {
-
             sum_x += x[i];
             sum_y += y[i];
             sum_xy += (x[i] * y[i]);
@@ -104,7 +112,7 @@ function GoalProgressModal({show, setShowProgress, user}) {
 
         lr['slope'] = (n * sum_xy - sum_x * sum_y) / (n * sum_xx - sum_x * sum_x);
         lr['intercept'] = (sum_y - lr.slope * sum_x) / n;
-        lr['r2'] = Math.pow((n * sum_xy - sum_x * sum_y) / Math.sqrt((n * sum_xx - sum_x * sum_x) * (n * sum_yy - sum_y * sum_y)), 2);
+        // lr['r2'] = Math.pow((n * sum_xy - sum_x * sum_y) / Math.sqrt((n * sum_xx - sum_x * sum_x) * (n * sum_yy - sum_y * sum_y)), 2);
 
         return lr;
     }
@@ -114,16 +122,17 @@ function GoalProgressModal({show, setShowProgress, user}) {
         const y_values = [];
 
         for (let i = 0; i < graphData.length; i++) {
-            x_values.push(moment(graphData[i].x).unix() - moment(graphData[0].x).unix());
+            x_values.push(graphData[i].x - graphData[0].x);
             y_values.push(graphData[i].y);
         }
 
         const regression = linearRegression(x_values, y_values);
         //Y = slope * X + intercept
-        const x = ((1 - regression['intercept']) / regression['slope']) + moment(graphData[0].x).unix();
+        const x = ((1 - regression['intercept']) / regression['slope']) + graphData[0].x;
 
         if(regression['slope'] > 0){
-            return `you'll max this goal on ${moment(x).format("MMM Do YYYY")}`
+            // return `you'll max this goal on ${moment(x).format("MMM Do YYYY")}`
+            return `you're on the right track - keep logging activities!`
         } else {
             return `you need to log some more related activities for this goal to improve your ${goals[user.focus]}`
         }
@@ -133,7 +142,7 @@ function GoalProgressModal({show, setShowProgress, user}) {
         if (user != null && user.scores !== null) {
             if(graphData.length === 0){
                 return "No new activity logs since switching your focus! Check back after adding some."
-            } else if (graphData[graphData.length - 1][user.focus] === 1) {
+            } else if (graphData[graphData.length - 1].y === 1) {
                 return "Congratulations! You've maxed out this goal for now. It might be time to switch your focus"
             } else {
                 return `Based on your current progress, ${getDateReachGoal()}`
@@ -170,7 +179,7 @@ function GoalProgressModal({show, setShowProgress, user}) {
                 </div>
                 <Row>
                     <Col className={"m-0"}>
-                        {/*<p className={"mt-2 text-justify"}>{goalPrediction()}</p>*/}
+                        <p className={"mt-2 text-justify"}>{goalPrediction()}</p>
                     </Col>
                     <Col className={"col-2 my-3 mx-1 justify-self-center"}>
                         <Button variant="secondary" onClick={handleClose}>Close</Button>
