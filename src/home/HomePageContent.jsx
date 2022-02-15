@@ -6,6 +6,7 @@ import {Col, Container, Row} from 'react-bootstrap';
 import RadarChart from 'react-svg-radar-chart';
 import 'react-svg-radar-chart/build/css/index.css';
 import {goals} from "../constants";
+import Recommendation from "../Recommendation";
 
 function HomePageContent({userScore, user, setShowModal, getEntriesForPastWeek, setShowGoalProgress}) {
     const [responseMessage, setResponseMessage] = useState("Welcome back");
@@ -79,10 +80,7 @@ function HomePageContent({userScore, user, setShowModal, getEntriesForPastWeek, 
                     </Row>
                     <Row className="recommendationSection mt-5">
                         <h4>Recommended for you...</h4>
-                        <Card className="recommendationCard py-2">
-                            <Card.Title>Basketball</Card.Title>
-                            <Card.Text className="goals">Physical Activity, Connection</Card.Text>
-                        </Card>
+                        <Recommendation user={user}/>
                     </Row>
                 </Col>
                 <Col/>
