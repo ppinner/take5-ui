@@ -44,9 +44,9 @@ function ProfilePageContent({user, setUser, activities}) {
     const saveChanges = () => {
         //TODO - error handling with incorrect inputs
         const updatedUser = user;
-        if (name != undefined)
+        if (name !== undefined)
             updatedUser.name = name;
-        if (dob != NaN)
+        if (dob.isNaN())
             updatedUser.dob = dateFromDateString(dob);
         updatedUser.focus = goal;
 

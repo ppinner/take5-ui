@@ -38,7 +38,7 @@ const getEntriesForTimePeriod = (user, start, end) => {
     const weekAgo = new Date(end);
     let activities;
 
-    if (user.activityLog != null) {
+    if (user != null && user.activityLog != null) {
         activities = user.activityLog.filter(log => {
             return weekAgo <= log.date <= today
         });
@@ -115,6 +115,11 @@ function Page() {
                 })
                 .catch((error) => console.log(error));
         }
+    }, [userId]);
+
+    useEffect(() => {
+        if(!isLoggedIn && userId != null)
+            setIsLoggedIn(true)
     }, [userId]);
 
     useEffect(() => {

@@ -45,7 +45,11 @@ function HomePageContent({userScore, user, setShowModal, getEntriesForPastWeek, 
     }, [user]);
 
     const activityCount = () => {
-        return getEntriesForPastWeek(user).length
+        if(user != null) {
+           return getEntriesForPastWeek(user).length
+        } else {
+            return 0
+        }
     };
 
     return (
@@ -54,9 +58,11 @@ function HomePageContent({userScore, user, setShowModal, getEntriesForPastWeek, 
                 <Col xs={1}/>
                 <Col>
                     <h1>Hello, {user ? user.name : ""}</h1>
-                    <text>You've
-                        tracked <strong>{activityCount()}</strong> {activityCount() === 1 ? "activity" : "activities"} this
-                        week. {responseMessage}</text>
+                    {user ?
+                        <text>You've
+                            tracked <strong>{activityCount()}</strong> {activityCount() === 1 ? "activity" : "activities"} this
+                            week. {responseMessage}</text>
+                        : null}
                 </Col>
                 <Col xs={1}/>
             </Row>

@@ -1,30 +1,14 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Login.css';
-
-
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import Button from 'react-bootstrap/Button';
 import {Col, Container, Row} from 'react-bootstrap';
 import logo from "../Take5FullLogoCropped.png";
 import Image from "react-bootstrap/Image";
+import LoginModal from "./LoginModal";
 
-function Login({setIsLoggedIn, setUserId, setUser}) {
-    const userId = "61cc7e34b137a57798047db1"; //TODO - use actual login to get this info
-
-    const login = () => {
-        setUserId(userId);
-        if (userId)
-            setIsLoggedIn(true)
-    };
-
-    useEffect(() => {
-        if(userId != null) {
-            fetch(`http://localhost:8081/api/users/${userId}`)
-                .then(res => res.json())
-                .then(result => setUser(result))
-                .catch((error) => console.log(error))
-        }
-    }, [userId]);
+function Login({setIsLoggedIn, userId, setUserId}) {
+    const [showLoginModal, setShowLoginModal] = useState(false);
 
     return (
         <Container className="Login d-flex">
@@ -38,13 +22,15 @@ function Login({setIsLoggedIn, setUserId, setUser}) {
                 <text>Start taking Steps to Wellbeing and see the results!</text>
                 <Container className="mt-4">
                     <Row>
-                        <Button variant="primary" className="primaryButton" onClick={login}>Login</Button>
+                        <Button variant="primary" className="primaryButton" onClick={() => setShowLoginModal(true)}>Login</Button>
                     </Row>
                     <Row>
                         <Button variant="outline-secondary" className="secondaryButton mt-2">Sign Up</Button>
                     </Row>
                 </Container>
             </Col>
+            <LoginModal setUserId={setUserId} showLoginModal={showLoginModal} setShowLoginModal={setShowLoginModal}
+                        setIsLoggedIn={setIsLoggedIn}/>
         </Container>
     );
 }
