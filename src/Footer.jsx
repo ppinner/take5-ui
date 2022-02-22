@@ -7,7 +7,7 @@ function Footer({setShowPrivacy, setShowHelp}) {
         <Row className="footer">
             <Col xs={3}/>
             <Button as={Col} className="footer-button" variant="outline-secondary" onClick={()=>setShowPrivacy(true)}>Privacy</Button>
-            <Button as={Col} className="footer-button" variant="outline-secondary">Settings</Button>
+            <Button as={Col} className="footer-button" variant="outline-secondary" disabled>Settings</Button>
             <Button as={Col} className="footer-button" variant="outline-secondary" onClick={()=>setShowHelp(true)}>Urgent Help</Button>
             <Col xs={3}/>
         </Row>
