@@ -122,19 +122,30 @@ function GoalProgressModal({show, setShowProgress, user}) {
         const y_values = [];
 
         for (let i = 0; i < graphData.length; i++) {
-            x_values.push(graphData[i].x - graphData[0].x);
-            y_values.push(graphData[i].y);
+            x_values.push(Math.abs(graphData[i].x.diff(graphData[0].x, 'days')));
+            y_values.push(graphData[i].y * 100);
         }
 
         const regression = linearRegression(x_values, y_values);
-        //Y = slope * X + intercept
-        const x = ((1 - regression['intercept']) / regression['slope']) + graphData[0].x;
+        const x = (1 - regression['intercept']) / regression['slope'];
+        const xTimestamp = moment(graphData[0].x).add(x, 'days');
 
-        if(regression['slope'] > 0){
-            // return `you'll max this goal on ${moment(x).format("MMM Do YYYY")}`
-            return `you're on the right track - keep logging activities!`
-        } else {
+        if(regression['slope'] < 0){
             return `you need to log some more related activities for this goal to improve your ${goals[user.focus]}`
+        } else {
+            return `you'll achieve this goal in ${getTimeframe(xTimestamp, graphData[0].x)} (${xTimestamp.format("MMM Do YYYY")})`
+        }
+    };
+
+    const getTimeframe = (date, startDate) => {
+        if (date.diff(startDate, 'days') <= 7) {
+            return `under one week!`
+        } else if (date.diff(startDate, 'days') <= 14) {
+            return `under two weeks!`
+        } else if (date.diff(startDate, 'months') <= 1) {
+            return `less than one month!`
+        } else {
+            return null
         }
     };
 
