@@ -8,7 +8,7 @@ import 'react-svg-radar-chart/build/css/index.css';
 import {goals} from "../constants";
 import Recommendation from "../Recommendation";
 
-function HomePageContent({userScore, user, setShowModal, getEntriesForPastWeek, setShowGoalProgress}) {
+function HomePageContent({userScore, user, activityLog, setShowModal, getEntriesForPastWeek, setShowGoalProgress}) {
     const [responseMessage, setResponseMessage] = useState("Welcome back");
     const [graphData, setGraphData] = useState([]);
 
@@ -25,28 +25,34 @@ function HomePageContent({userScore, user, setShowModal, getEntriesForPastWeek, 
         });
         setResponseMessage(responseMessage);
 
-    }, [user]);
+    }, [activityLog]);
 
     useEffect(() => {
-        setGraphData([
-            {
-                data: {
-                    mindfulness: userScore.mindfulness,
-                    connection: userScore.connection,
-                    physicalActivity: userScore.physicalActivity,
-                    learning: userScore.learning,
-                    giving: userScore.giving
-                },
-                meta: {
-                    color: '#5D88BB',
-                    fill: '#B3CBE4'
+        if(userScore != null) {
+            setGraphData([
+                {
+                    data: {
+                        mindfulness: userScore.mindfulness,
+                        connection: userScore.connection,
+                        physicalActivity: userScore.physicalActivity,
+                        learning: userScore.learning,
+                        giving: userScore.giving
+                    },
+                    meta: {
+                        color: '#5D88BB',
+                        fill: '#B3CBE4'
+                    }
                 }
-            }
-        ])
-    }, [user]);
+            ])
+        }
+    }, [activityLog, userScore]);
 
     const activityCount = () => {
-        return getEntriesForPastWeek(user).length
+        try {
+            return getEntriesForPastWeek(activityLog).length
+        } catch (e) {
+            return 0
+        }
     };
 
     return (
@@ -80,7 +86,10 @@ function HomePageContent({userScore, user, setShowModal, getEntriesForPastWeek, 
                     </Row>
                     <Row className="recommendationSection mt-5">
                         <h4>Recommended for you...</h4>
-                        <Recommendation user={user}/>
+                        {user ?
+                            <Recommendation user={user}/>
+                            : 'Calculating.. check back later!'
+                        }
                     </Row>
                 </Col>
                 <Col/>
