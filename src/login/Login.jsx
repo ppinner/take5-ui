@@ -8,7 +8,7 @@ import {Col, Container, Row} from 'react-bootstrap';
 import logo from "../Take5FullLogoCropped.png";
 import Image from "react-bootstrap/Image";
 
-function Login({setIsLoggedIn, setUserId, setUser}) {
+function Login({setIsLoggedIn, setUserId, setUser, setActivityLog}) {
     const userId = "61cc7e34b137a57798047db1"; //TODO - use actual login to get this info
 
     const login = () => {
@@ -22,7 +22,12 @@ function Login({setIsLoggedIn, setUserId, setUser}) {
             fetch(`http://localhost:8081/api/users/${userId}`)
                 .then(res => res.json())
                 .then(result => setUser(result))
-                .catch((error) => console.log(error))
+                .catch((error) => console.log(error));
+
+            fetch(`http://localhost:8081/api/activityLog/user/${userId}`)
+                .then(res => res.json())
+                .then(result => setActivityLog(result))
+                .catch((error) => console.log(error));
         }
     }, [userId]);
 

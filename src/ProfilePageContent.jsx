@@ -27,7 +27,7 @@ const calculateAge = (date) => {
     return moment().diff(date, 'years', false);
 };
 
-function ProfilePageContent({user, setUser, activities}) {
+function ProfilePageContent({user, setUser, activityLog, activities}) {
     const [editable, setEditable] = useState(false);
     const [takePersonalityTest, setTakePersonalityTest] = useState(false);
     const [name, setName] = useState(user.name);
@@ -70,12 +70,12 @@ function ProfilePageContent({user, setUser, activities}) {
     };
 
     useEffect(() => {
-        if (user != null && user.activityLog != null) {
+        if (user != null && activityLog != null) {
             let activityCounts = {};
             let goalCounts = {};
-            for (let i = 0; i < user.activityLog.length; i++) {
-                if (user.activityLog[i].activity.id != null) {
-                    const activity = user.activityLog[i].activity;
+            for (let i = 0; i < activityLog.length; i++) {
+                if (activityLog[i].activity.id != null) {
+                    const activity = activityLog[i].activity;
                     activityCounts[activity.id] = (activityCounts[activity.id] || 0) + 1;
                     activity.category.map((goal) => {
                         goalCounts[goal] = (goalCounts[goal] || 0) + 1;
@@ -152,7 +152,7 @@ function ProfilePageContent({user, setUser, activities}) {
                 })
             }
         }
-    }, [user]);
+    }, [activityLog]);
 
 
     const popover = ((trait) => {

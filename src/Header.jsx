@@ -6,9 +6,12 @@ import DropdownButton from "react-bootstrap/DropdownButton";
 import Dropdown from "react-bootstrap/Dropdown";
 import React from "react";
 
-function Header({showProfile, setShowProfile, setIsLoggedIn, setShowModal, setShowHistory, setShowGoalProgress}) {
+function Header({showProfile, setShowProfile, setIsLoggedIn, setShowModal, setShowHistory, setShowGoalProgress, setUserId}) {
     const toggleShowProfile = () => setShowProfile(!showProfile);
-    const logout = () => setIsLoggedIn(false);
+    const logout = () => {
+        setUserId(null);
+        setIsLoggedIn(false);
+    };
 
     return (
             <Row className="App-header mt-4">
