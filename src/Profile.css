@@ -45,7 +45,12 @@
 }
 
 .popover-header {
-    background-color: #D6D6D6 !important;
+    background-color: #102336 !important;
+    border-color: #5D88BB !important;
+    color: white;
+}
+.popover {
+    border-color: #5D88BB !important;
     color: black;
 }
 

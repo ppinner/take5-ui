@@ -50,7 +50,7 @@ function ProfilePageContent({user, setUser, activityLog, activities}) {
             updatedUser.dob = dateFromDateString(dob);
         updatedUser.focus = goal;
 
-        if(goalChanged){
+        if (goalChanged) {
             updatedUser.focusStart = today;
         }
 
@@ -93,14 +93,14 @@ function ProfilePageContent({user, setUser, activityLog, activities}) {
                     } catch {
                         return null
                     }
-                    });
+                });
 
                 setMostPopularGoal(() => {
                     try {
-                    const mostPopularGoal = Object.keys(goalCounts).reduce((max, key) => {
-                        return (max === undefined || goalCounts[key] > goalCounts[max]) ? +key : max
-                    });
-                    return goals[mostPopularGoal];
+                        const mostPopularGoal = Object.keys(goalCounts).reduce((max, key) => {
+                            return (max === undefined || goalCounts[key] > goalCounts[max]) ? +key : max
+                        });
+                        return goals[mostPopularGoal];
                     } catch {
                         return null
                     }
@@ -145,7 +145,7 @@ function ProfilePageContent({user, setUser, activityLog, activities}) {
                             return (max === undefined || diffs[key] > diffs[max]) ? +key : max
                         });
                         return goals[mostImprovedGoal]
-                    } catch (e){
+                    } catch (e) {
                         console.log(e);
                         return null
                     }
@@ -248,18 +248,17 @@ function ProfilePageContent({user, setUser, activityLog, activities}) {
                     <Card className="personalityResults">
                         <Card.Body>
                             <Row>
-                                { user.personality ?
+                                {user.personality ?
                                     Object.entries(user.personality).map(trait => {
                                         return (
                                             <OverlayTrigger
-                                                trigger="['hover', 'focus']"
+                                                trigger="hover"
                                                 key={trait}
                                                 placement="top"
                                                 overlay={popover(trait[0])}
                                             >
                                                 <Card className="personalityTrait col">
-                                                    <Card.Title
-                                                        className="personalityTrait_title">{trait[0].charAt(0).toUpperCase()}</Card.Title>
+                                                    <Card.Title className="personalityTrait_title">{trait[0].charAt(0).toUpperCase()}</Card.Title>
                                                     <Card.Text>{trait[1]}</Card.Text>
                                                 </Card>
                                             </OverlayTrigger>

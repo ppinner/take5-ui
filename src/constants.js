@@ -32,7 +32,7 @@ export const personalityTraitDesc = {
     conscientiousness: 'The personality trait of being honest and hardworking. High scorers ' +
         'tend to follow rules and prefer clean homes. Low scorers may be messy and cheat others.',
     openness: 'The personality trait of seeking new experience and intellectual ' +
-        'pursuits. High scores may day dream a lot. Low scorers may be very down to earth.'
+        'pursuits. High scorers may daydream a lot. Low scorers may be very down to earth.'
 };
 
 export const emoticons = {
