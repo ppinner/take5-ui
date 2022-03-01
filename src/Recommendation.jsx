@@ -18,7 +18,14 @@ function Recommendation({user}) {
     };
 
     useEffect(() => {
-        setRecommendation(calculateRecommendation)
+        if (user != null) {
+            fetch(`http://localhost:8081/api/recommender/${user.id}`)
+                .then(res => res.json())
+                .then(result => {
+                    setRecommendation(result)
+                })
+                .catch((error) => console.log(error));
+        }
     }, [user]);
 
     return (
