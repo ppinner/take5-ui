@@ -252,7 +252,7 @@ function ProfilePageContent({user, setUser, activityLog, activities}) {
                                     Object.entries(user.personality).map(trait => {
                                         return (
                                             <OverlayTrigger
-                                                trigger="hover"
+                                                trigger={['hover', 'focus']}
                                                 key={trait}
                                                 placement="top"
                                                 overlay={popover(trait[0])}
