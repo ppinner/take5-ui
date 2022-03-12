@@ -1,6 +1,6 @@
 import '../Page.css';
 import Button from "react-bootstrap/Button";
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import {Col} from "react-bootstrap";
@@ -18,7 +18,6 @@ function CreateActivityModal({show, setShowCreateActivityModal, activities, setA
         clearModal();
         setShowCreateActivityModal(false);
         setShowActivityLogModal(true);
-        alertService.clear()
     };
 
     const clearModal = () => {

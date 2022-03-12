@@ -13,7 +13,6 @@ import TableBody from "@mui/material/TableBody/TableBody";
 import {emoticons} from "../constants";
 import TablePagination from "@mui/material/TablePagination/TablePagination";
 import {alertService} from "../alert/alert-service";
-import {Alert} from "../alert/Alert";
 
 const Moment = require('moment');
 
@@ -33,7 +32,7 @@ function ActivityHistoryModal({show, setShowHistory, activityLog, setShowActivit
     const handleClose = () => {
         setPage(0);
         setShowHistory(false);
-        alertService.clear()
+        alertService.clear();
     };
 
     const deleteLog = (id) => {
@@ -67,9 +66,9 @@ function ActivityHistoryModal({show, setShowHistory, activityLog, setShowActivit
             backdrop="static"
             keyboard={false}
             dialogClassName="modal-90w"
+            size="lg"
             centered
         >
-            <Alert/>
             <Modal.Header>
                 <Modal.Title>Activity Log</Modal.Title>
                 <Button variant="secondary" onClick={handleClose}>Close</Button>

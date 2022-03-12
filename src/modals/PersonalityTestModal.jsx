@@ -26,7 +26,6 @@ function PersonalityTestModal({takePersonalityTest, setTakePersonalityTest, user
     const handleClose = () => {
         resetTestModal();
         setTakePersonalityTest(false);
-        alertService.clear()
         //TODO - show error popup when try to do this
     };
 
@@ -162,6 +161,7 @@ function PersonalityTestModal({takePersonalityTest, setTakePersonalityTest, user
             backdrop="static"
             keyboard={false}
             dialogClassName="modal-90w"
+            size={"lg"}
             centered
         >
             <Modal.Header>

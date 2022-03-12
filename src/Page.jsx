@@ -11,7 +11,6 @@ import PrivacyModal from "./modals/PrivacyModal";
 import HelpModal from "./modals/HelpModal";
 import ActivityHistoryModal from "./modals/ActivityHistoryModal";
 import CreateActivityModal from "./modals/CreateActivityModal";
-import moment from "moment";
 import GoalProgressModal from "./modals/GoalProgressModal";
 import {Alert} from "./alert/Alert";
 import {alertService} from "./alert/alert-service";
@@ -68,14 +67,6 @@ const getUpdatedScoreForActivity = (focus, currentScore, goals) => {
     return score
 };
 
-const startScores = {
-    connection: 0,
-    mindfulness: 0,
-    physicalActivity: 0,
-    giving: 0,
-    learning: 0
-};
-
 function Page() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [showProfile, setShowProfile] = useState(false);
@@ -87,7 +78,6 @@ function Page() {
     const [showHistory, setShowHistory] = useState(false);
     const [editedActivityLog, setEditedActivityLog] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false); //TODO - implement loading icon
-    const [error, setError] = useState(false); //TODO - implement error notifications
     const [userId, setUserId] = useState(null);
     const [user, setUser] = useState(null);
     const [activities, setActivities] = useState(null);
