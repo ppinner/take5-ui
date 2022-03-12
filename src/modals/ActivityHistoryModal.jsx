@@ -12,6 +12,8 @@ import TableCell from "@mui/material/TableCell/TableCell";
 import TableBody from "@mui/material/TableBody/TableBody";
 import {emoticons} from "../constants";
 import TablePagination from "@mui/material/TablePagination/TablePagination";
+import {alertService} from "../alert/alert-service";
+import {Alert} from "../alert/Alert";
 
 const Moment = require('moment');
 
@@ -31,6 +33,7 @@ function ActivityHistoryModal({show, setShowHistory, activityLog, setShowActivit
     const handleClose = () => {
         setPage(0);
         setShowHistory(false);
+        alertService.clear()
     };
 
     const deleteLog = (id) => {
@@ -44,9 +47,11 @@ function ActivityHistoryModal({show, setShowHistory, activityLog, setShowActivit
         fetch(`http://localhost:8081/api/activityLog/delete/${id}`, requestOptions)
             .then(() => {
                 setUpdatedActivityLog(true);
+                alertService.success('Log was deleted successfully');
+
             })
             .catch(error => {
-                console.log(error)
+                alertService.error('Could not delete activity log');
             });
     };
 
@@ -64,6 +69,7 @@ function ActivityHistoryModal({show, setShowHistory, activityLog, setShowActivit
             dialogClassName="modal-90w"
             centered
         >
+            <Alert/>
             <Modal.Header>
                 <Modal.Title>Activity Log</Modal.Title>
                 <Button variant="secondary" onClick={handleClose}>Close</Button>

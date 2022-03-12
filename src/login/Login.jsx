@@ -7,6 +7,7 @@ import Button from 'react-bootstrap/Button';
 import {Col, Container, Row} from 'react-bootstrap';
 import logo from "../Take5FullLogoCropped.png";
 import Image from "react-bootstrap/Image";
+import {alertService} from "../alert/alert-service";
 
 function Login({setIsLoggedIn, setUserId, setUser, setActivityLog}) {
     const userId = "61cc7e34b137a57798047db1"; //TODO - use actual login to get this info
@@ -22,12 +23,24 @@ function Login({setIsLoggedIn, setUserId, setUser, setActivityLog}) {
             fetch(`http://localhost:8081/api/users/${userId}`)
                 .then(res => res.json())
                 .then(result => setUser(result))
-                .catch((error) => console.log(error));
+                .catch((error) => {
+                    if(error.statusCode / 100 === 4) {
+                        alertService.error('Invalid input, please ensure all required fields are provided');
+                    } else {
+                        alertService.error('There was an error handling your request. Please try again later.');
+                    }
+                });
 
             fetch(`http://localhost:8081/api/activityLog/user/${userId}`)
                 .then(res => res.json())
                 .then(result => setActivityLog(result))
-                .catch((error) => console.log(error));
+                .catch((error) => {
+                    if(error.statusCode / 100 === 4) {
+                        alertService.error('Invalid input, please ensure all required fields are provided');
+                    } else {
+                        alertService.error('There was an error handling your request. Please try again later.');
+                    }
+                });
         }
     }, [userId]);
 

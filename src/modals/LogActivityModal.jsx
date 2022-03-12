@@ -10,6 +10,8 @@ import {goals, emoticons} from "../constants";
 import Rating from '@mui/material/Rating';
 import PropTypes from "prop-types";
 import {dateForPicker, dateFromDateString} from "../ProfilePageContent";
+import Alert from "bootstrap/js/src/alert";
+import {alertService} from "../alert/alert-service";
 
 function IconContainer(props) {
     const {value, ...other} = props;
@@ -22,7 +24,6 @@ IconContainer.propTypes = {
 
 function LogActivityModal({show, setShowLogActivityModal, activities, userId, setUser, user, editing,
                               setEditing, setShowCreateActivityModal, setShowHistoryModal, setUpdatedActivityLog, activityLog, setActivityLog}) {
-    const [showError, setShowError] = useState(false); //TODO - implement error handling
     const [rating, setRating] = useState(0);
     const [activity, setActivity] = useState(null);
     const [activityGoals, setActivityGoals] = useState([]);  //format [ 0: "Activity", 1: "Connection" ]
@@ -36,6 +37,7 @@ function LogActivityModal({show, setShowLogActivityModal, activities, userId, se
             setEditing(null);
         }
         clearModal();
+        alertService.clear()
     };
 
     const clearModal = () => {
@@ -75,6 +77,7 @@ function LogActivityModal({show, setShowLogActivityModal, activities, userId, se
     }, [editing]);
 
     const submitActivity = () => {
+        try{
         const activityLogObj = {
             "activity": {
                 "id": activity.id,
@@ -108,16 +111,24 @@ function LogActivityModal({show, setShowLogActivityModal, activities, userId, se
                     const index = activityLog.map(x => {return x.id; }).indexOf(activityLogObj.id);
                     let updatedLog = activityLog;
                     updatedLog[index] = activityLogObj;
-
+                    alertService.success('Activity log was saved successfully');
                     setActivityLog(updatedLog);
+
                     handleClose();
                 })
                 .catch(error => {
-                    setShowError(true);
                     console.log(error)
+
+                    if(error.statusCode / 100 === 4) {
+                        alertService.error('Invalid entry, please ensure all required fields are provided');
+                    } else {
+                        alertService.error('There was an error handling your request. Please try again later.');
+                    }
                 });
         } else {
-            console.log("error in input - please provide an activity name");
+            alertService.error('Invalid entry - please provide an activity name');
+        }} catch(error) {
+            alertService.error('Invalid entry - please provide activity details');
         }
     };
 

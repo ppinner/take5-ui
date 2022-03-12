@@ -1,0 +1,12 @@
+.alert > a {
+    color: inherit;
+    text-decoration: none;
+    float: right;
+}
+
+.alert {
+    z-index: 2000;
+    position: absolute;
+    top: 30px;
+    width: 80%;
+}

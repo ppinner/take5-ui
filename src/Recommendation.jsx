@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import Card from "react-bootstrap/Card";
 import {goals} from "./constants";
+import {alertService} from "./alert/alert-service";
 
 function Recommendation({user}) {
     const [recommendation, setRecommendation] = useState(null);
@@ -24,7 +25,10 @@ function Recommendation({user}) {
                 .then(result => {
                     setRecommendation(result)
                 })
-                .catch((error) => console.log(error));
+                .catch((error) => {
+                    console.log(error);
+                    // alertService.error('Could not get recommendation at this time');
+                });
         }
     }, [user]);
 

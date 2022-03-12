@@ -13,6 +13,8 @@ import ActivityHistoryModal from "./modals/ActivityHistoryModal";
 import CreateActivityModal from "./modals/CreateActivityModal";
 import moment from "moment";
 import GoalProgressModal from "./modals/GoalProgressModal";
+import {Alert} from "./alert/Alert";
+import {alertService} from "./alert/alert-service";
 
 const today = new Date();
 const weekAgo = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
@@ -114,9 +116,11 @@ function Page() {
                 .then(result => {
                     let userUpdate = result;
                     setUser(userUpdate);
-                    setEditedActivityLog(true)
+                    setEditedActivityLog(true);
                 })
-                .catch((error) => console.log(error));
+                .catch((error) => {
+                    alertService.error(`Could not retrieve user details for ${userId}`);
+                });
         }
     }, [userId]);
 
@@ -129,7 +133,13 @@ function Page() {
                     setScore(calculateScore(result, weekAgo, today));
                     setEditedActivityLog(false)
                 })
-                .catch((error) => console.log(error));
+                .catch((error) => {
+                    if(error.statusCode / 100 === 4) {
+                        alertService.error('Invalid input, please ensure all required fields are provided');
+                    } else {
+                        alertService.error('There was an error handling your request. Please try again later.');
+                    }
+                });
         }
     }, [editedActivityLog, userId]);
 
@@ -137,7 +147,9 @@ function Page() {
         fetch(`http://localhost:8081/api/activities`)
             .then(res => res.json())
             .then(result => setActivities(result))
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                alertService.error('Could not retrieve activities data');
+            });
     }, []);
 
     useEffect(() => {
@@ -153,13 +165,16 @@ function Page() {
 
             fetch(`http://localhost:8081/api/users/${user.id}/score`, requestOptions)
                 .then(res => res.json())
-                .catch((error) => console.log(error))
+                .catch((error) => {
+                    alertService.error('Could not update score');
+                })
         }
     }, [userScore]);
 
     if (isLoggedIn) {
         return (
             <Container className="App">
+
                 <Header showProfile={showProfile}
                         setShowProfile={setShowProfile}
                         setIsLoggedIn={setIsLoggedIn}
@@ -168,6 +183,7 @@ function Page() {
                         setShowGoalProgress={setShowGoalProgress}
                         setUserId={setUserId}
                 />
+                <Alert />
                 {renderPageContent(showProfile, user, setUser, setShowLogActivityModal, activities, userScore, setShowGoalProgress, activityLog, setActivityLog)}
 
                 {showHistory ?

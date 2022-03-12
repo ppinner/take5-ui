@@ -12,6 +12,8 @@ import Popover from 'react-bootstrap/Popover';
 import moment from "moment";
 import PersonalityTestModal from "./modals/PersonalityTestModal";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import {alertService} from "./alert/alert-service";
+import InvalidInputError from "./InvalidInputError.js";
 
 const toggleEditable = (editable, setEditable) => setEditable(!editable);
 
@@ -33,6 +35,11 @@ function ProfilePageContent({user, setUser, activityLog, activities}) {
     const [name, setName] = useState(user.name);
     const [dob, setDob] = useState(user.dob);
     const [goal, setGoal] = useState(user.focus);
+    const [originalValues, setOriginalValues] = useState({
+        name: user.name,
+        dob: user.dob,
+        goal: user.focus
+    });
     const [goalChanged, setGoalChanged] = useState(false);
     const [mostPopularGoal, setMostPopularGoal] = useState();
     const [mostPopularActivity, setMostPopularActivity] = useState();
@@ -42,31 +49,45 @@ function ProfilePageContent({user, setUser, activityLog, activities}) {
     const monthAgo = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate()); //TODO - duplicated, move to utils
 
     const saveChanges = () => {
-        //TODO - error handling with incorrect inputs
-        const updatedUser = user;
-        if (name != undefined)
-            updatedUser.name = name;
-        if (dob != NaN)
-            updatedUser.dob = dateFromDateString(dob);
-        updatedUser.focus = goal;
+        try {
+            const updatedUser = user;
+            if (name != undefined)
+                updatedUser.name = name;
+            if (dob != NaN)
+                updatedUser.dob = dateFromDateString(dob);
+            updatedUser.focus = goal;
 
-        if (goalChanged) {
-            updatedUser.focusStart = today;
+            if (goalChanged) {
+                updatedUser.focusStart = today;
+            }
+
+            if (updatedUser.dob === "Invalid date") {
+                throw new InvalidInputError("Invalid date input");
+            }
+
+            setUser(updatedUser);
+            const requestOptions = {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(updatedUser)
+            };
+
+            fetch(`http://localhost:8081/api/users/${user.id}`, requestOptions)
+                .then(res => {
+                    return res.json()
+                })
+                .catch((error) => {
+                    if (error.statusCode / 100 === 4) {
+                        alertService.error('Invalid input, please ensure all required fields are provided');
+                    } else {
+                        alertService.error('There was an error handling your request. Please try again later.');
+                    }
+                });
+
+            toggleEditable(editable, setEditable);
+        } catch(e) {
+            alertService.error('There was an error with values input. Please ensure they are correct');
         }
-
-        setUser(updatedUser);
-        const requestOptions = {
-            method: 'PUT',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(updatedUser)
-        };
-
-        fetch(`http://localhost:8081/api/users/${user.id}`, requestOptions)
-            .then(res => res.json())
-            .catch((error) => console.log(error));
-
-
-        toggleEditable(editable, setEditable);
     };
 
     useEffect(() => {
@@ -165,7 +186,7 @@ function ProfilePageContent({user, setUser, activityLog, activities}) {
     });
 
     return (
-        <Container className="Profile">
+        <Container className="Profile mt-3">
             <Row>
                 <Col xs={1}/>
                 <Col>
@@ -258,7 +279,8 @@ function ProfilePageContent({user, setUser, activityLog, activities}) {
                                                 overlay={popover(trait[0])}
                                             >
                                                 <Card className="personalityTrait col">
-                                                    <Card.Title className="personalityTrait_title">{trait[0].charAt(0).toUpperCase()}</Card.Title>
+                                                    <Card.Title
+                                                        className="personalityTrait_title">{trait[0].charAt(0).toUpperCase()}</Card.Title>
                                                     <Card.Text>{trait[1]}</Card.Text>
                                                 </Card>
                                             </OverlayTrigger>

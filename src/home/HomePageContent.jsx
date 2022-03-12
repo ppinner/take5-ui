@@ -56,7 +56,7 @@ function HomePageContent({userScore, user, activityLog, setShowModal, getEntries
     };
 
     return (
-        <Container className="Home">
+        <Container className="Home mt-3">
             <Row className="greeting">
                 <Col xs={1}/>
                 <Col>
