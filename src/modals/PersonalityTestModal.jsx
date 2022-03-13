@@ -197,9 +197,10 @@ function PersonalityTestModal({takePersonalityTest, setTakePersonalityTest, user
                                                     min={1}
                                                     max={5}
                                                     step={null}
-                                                    defaultValue={answers[index]}
+                                                    key={index}
+                                                    defaultValue={answers[bounds.start + index]}
                                                     valueLabelDisplay="auto"
-                                                    onChangeCommitted={(e, val) => updateAnswer(val, index)}
+                                                    onChangeCommitted={(e, val) => updateAnswer(val, bounds.start + index)}
                                                 />
                                             </div>
                                         </Col>
