@@ -199,10 +199,13 @@ function LogActivityModal({show, setShowLogActivityModal, activities, userId, se
                         </Form.Group>
                         <Form.Group>
                             <Col>
-                                <Form.Control type="date" id="dateField"
-                                              defaultValue={dateForPicker(date)}
-                                              onfocus={dateForPicker(date)}
-                                              onChange={(e) => setDate(dateFromDateString(e.target.value))}
+                                <Form.Control
+                                    type="date"
+                                    id="dateField"
+                                    value={date ? dateForPicker(date) : ''}
+                                    onfocus={dateForPicker(date)}
+                                    placeholder={date ? dateForPicker(date) : "dd/mm/yyyy"}
+                                    onChange={(e) => setDate(dateFromDateString(e.target.value))}
                                 />
                             </Col>
                         </Form.Group>

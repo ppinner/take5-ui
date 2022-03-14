@@ -211,10 +211,12 @@ function ProfilePageContent({user, setUser, activityLog, activities}) {
                             <Form.Group as={Row} className="mb-3 align-items-center" controlId="dobInput">
                                 <Form.Label column lg={4}>Date of Birth:</Form.Label>
                                 <Col>
-                                    <Form.Control type="date" id="dobField"
-                                                  defaultValue={dateForPicker(dob)}
-                                                  onfocus={dateForPicker(dob)}
-                                                  onChange={(e) => setDob(dateFromDateString(e.target.value))}
+                                    <Form.Control
+                                        type="date"
+                                        value={dob ? dateForPicker(dob) : ''}
+                                        onfocus={dateForPicker(dob)}
+                                        placeholder={dob ? dateForPicker(dob) : "dd/mm/yyyy"}
+                                        onChange={(e) => setDob(dateFromDateString(e.target.value))}
                                     />
                                 </Col>
                             </Form.Group>
