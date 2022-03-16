@@ -8,7 +8,7 @@ import 'react-svg-radar-chart/build/css/index.css';
 import {goals} from "../constants";
 import Recommendation from "../Recommendation";
 
-function HomePageContent({userScore, user, activityLog, setShowModal, getEntriesForPastWeek, setShowGoalProgress}) {
+function HomePageContent({userScore, user, activityLog, setShowModal, getEntriesForPastWeek, setShowGoalProgress, recommendation}) {
     const [responseMessage, setResponseMessage] = useState("Welcome back");
     const [graphData, setGraphData] = useState([]);
 
@@ -87,7 +87,7 @@ function HomePageContent({userScore, user, activityLog, setShowModal, getEntries
                     <Row className="recommendationSection mt-5">
                         <h4>Recommended for you...</h4>
                         {user ?
-                            <Recommendation user={user}/>
+                            <Recommendation recommendation={recommendation}/>
                             : 'Calculating.. check back later!'
                         }
                     </Row>

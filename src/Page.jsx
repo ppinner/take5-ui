@@ -18,14 +18,15 @@ import {alertService} from "./alert/alert-service";
 const today = new Date();
 const weekAgo = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
 
-const renderPageContent = (showProfile, user, setUser, setShowModal, activities, userScore, setShowGoalProgress, activityLog, setActivityLog) => {
+const renderPageContent = (showProfile, user, setUser, setShowModal, activities, userScore, setShowGoalProgress, activityLog, setActivityLog, recommendation) => {
     if (showProfile) {
         return <ProfilePageContent user={user} setUser={setUser} activityLog={activityLog} activities={activities}/>;
     } else {
         return <HomePageContent user={user} userScore={userScore} activityLog={activityLog} today={today}
                                 setShowModal={setShowModal}
                                 getEntriesForPastWeek={getEntriesForPastWeek}
-                                setShowGoalProgress={setShowGoalProgress}/>;
+                                setShowGoalProgress={setShowGoalProgress}
+                                recommendation={recommendation}/>;
     }
 };
 
@@ -84,6 +85,7 @@ function Page() {
     const [showCreateActivityModal, setCreateActivityModal] = useState(false);
     const [userScore, setScore] = useState(null);
     const [activityLog, setActivityLog] = useState(null);
+    const [recommendation, setRecommendation] = useState(null);
 
     const calculateScore = (logs, start, end) => {
         const counter = {
@@ -110,6 +112,20 @@ function Page() {
                 })
                 .catch((error) => {
                     alertService.error(`Could not retrieve user details for ${userId}`);
+                });
+        }
+    }, [userId]);
+
+    useEffect(() => {
+        if (user != null) {
+            fetch(`http://localhost:1234/recommender/user/${user.id}`)
+                .then(res => res.json())
+                .then(result => {
+                    setRecommendation(result)
+                })
+                .catch((error) => {
+                    console.log(error);
+                    alertService.error('Could not get recommendation at this time');
                 });
         }
     }, [userId]);
@@ -164,7 +180,6 @@ function Page() {
     if (isLoggedIn) {
         return (
             <Container className="App">
-
                 <Header showProfile={showProfile}
                         setShowProfile={setShowProfile}
                         setIsLoggedIn={setIsLoggedIn}
@@ -174,7 +189,7 @@ function Page() {
                         setUserId={setUserId}
                 />
                 <Alert />
-                {renderPageContent(showProfile, user, setUser, setShowLogActivityModal, activities, userScore, setShowGoalProgress, activityLog, setActivityLog)}
+                {renderPageContent(showProfile, user, setUser, setShowLogActivityModal, activities, userScore, setShowGoalProgress, activityLog, setActivityLog, recommendation)}
 
                 {showHistory ?
                     <ActivityHistoryModal show={showHistory} setShowHistory={setShowHistory} activityLog={activityLog}
