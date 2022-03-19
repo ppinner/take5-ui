@@ -35,11 +35,6 @@ function ProfilePageContent({user, setUser, activityLog, activities}) {
     const [name, setName] = useState(user.name);
     const [dob, setDob] = useState(user.dob);
     const [goal, setGoal] = useState(user.focus);
-    const [originalValues, setOriginalValues] = useState({
-        name: user.name,
-        dob: user.dob,
-        goal: user.focus
-    });
     const [goalChanged, setGoalChanged] = useState(false);
     const [mostPopularGoal, setMostPopularGoal] = useState();
     const [mostPopularActivity, setMostPopularActivity] = useState();

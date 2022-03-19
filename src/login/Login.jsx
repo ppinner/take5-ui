@@ -6,9 +6,12 @@ import {Col, Container, Row} from 'react-bootstrap';
 import logo from "../Take5FullLogoCropped.png";
 import Image from "react-bootstrap/Image";
 import LoginModal from "./LoginModal";
+import SignupModal from "./SignupModal";
+import {Alert} from "../alert/Alert";
 
 function Login({setLoggedIn}) {
     const [showLoginModal, setShowLoginModal] = useState(false);
+    const [showSignupModal, setShowSignupModal] = useState(false);
 
     return (
         <Container className="Login d-flex">
@@ -22,14 +25,20 @@ function Login({setLoggedIn}) {
                 <text>Start taking Steps to Wellbeing and see the results!</text>
                 <Container className="mt-4">
                     <Row>
-                        <Button variant="primary" className="primaryButton" onClick={() => setShowLoginModal(true)}>Login</Button>
+                        <Button variant="primary" className="primaryButton"
+                                onClick={() => setShowLoginModal(true)}>Login</Button>
                     </Row>
                     <Row>
-                        <Button variant="outline-secondary" className="secondaryButton mt-2">Sign Up</Button>
+                        <Button variant="outline-secondary" className="secondaryButton mt-2"
+                                onClick={() => setShowSignupModal(true)}>Sign Up</Button>
                     </Row>
+                    <Alert/>
                 </Container>
             </Col>
-            <LoginModal showLoginModal={showLoginModal} setShowLoginModal={setShowLoginModal} setLoggedIn={setLoggedIn}/>
+            <LoginModal showLoginModal={showLoginModal} setShowLoginModal={setShowLoginModal}
+                        setLoggedIn={setLoggedIn}/>
+            <SignupModal showSignupModal={showSignupModal} setShowSignupModal={setShowSignupModal}
+                         setShowLoginModal={setShowLoginModal}/>
         </Container>
     );
 }

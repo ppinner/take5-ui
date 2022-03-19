@@ -9,7 +9,6 @@ import {goals } from "../constants";
 import {alertService} from "../alert/alert-service";
 
 function CreateActivityModal({show, setShowCreateActivityModal, activities, setActivities, setShowActivityLogModal}) {
-    const [showError, setShowError] = useState(false); //TODO - implement error handling
     const [activityName, setActivityName] = useState("");
     const [activityGoals, setActivityGoals] = useState([]);  //format [ 0: "Activity", 1: "Connection" ]
     const [description, setDescription] = useState("");

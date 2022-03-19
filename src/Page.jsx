@@ -13,7 +13,7 @@ import CreateActivityModal from "./modals/CreateActivityModal";
 import GoalProgressModal from "./modals/GoalProgressModal";
 import {Alert} from "./alert/Alert";
 import {alertService} from "./alert/alert-service";
-import {useNavigate, useParams} from "react-router";
+import {useNavigate, useParams} from "react-router-dom";
 import SettingsModal from "./modals/SettingsModal";
 
 const today = new Date();
