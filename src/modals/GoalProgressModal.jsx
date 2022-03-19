@@ -8,6 +8,7 @@ import {Scatter} from "react-chartjs-2";
 import 'chartjs-adapter-moment';
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import {alertService} from "../alert/alert-service";
 
 function GoalProgressModal({show, setShowProgress, user}) {
     const getDataFromScoreHistory = () => {
@@ -163,6 +164,7 @@ function GoalProgressModal({show, setShowProgress, user}) {
 
     const handleClose = () => {
         setShowProgress(false);
+        alertService.clear()
     };
 
     useEffect(() => {

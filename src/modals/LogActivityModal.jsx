@@ -10,6 +10,8 @@ import {goals, emoticons} from "../constants";
 import Rating from '@mui/material/Rating';
 import PropTypes from "prop-types";
 import {dateForPicker, dateFromDateString} from "../ProfilePageContent";
+import Alert from "bootstrap/js/src/alert";
+import {alertService} from "../alert/alert-service";
 
 function IconContainer(props) {
     const {value, ...other} = props;
@@ -20,9 +22,8 @@ IconContainer.propTypes = {
     value: PropTypes.number.isRequired,
 };
 
-function LogActivityModal({show, setShowLogActivityModal, activities, userId, setUser, user, calculateScore, editing,
-                              setEditing, setShowCreateActivityModal, setShowHistoryModal}) {
-    const [showError, setShowError] = useState(false); //TODO - implement error handling
+function LogActivityModal({show, setShowLogActivityModal, activities, userId, setUser, user, editing,
+                              setEditing, setShowCreateActivityModal, setShowHistoryModal, setUpdatedActivityLog, activityLog, setActivityLog}) {
     const [rating, setRating] = useState(0);
     const [activity, setActivity] = useState(null);
     const [activityGoals, setActivityGoals] = useState([]);  //format [ 0: "Activity", 1: "Connection" ]
@@ -36,6 +37,7 @@ function LogActivityModal({show, setShowLogActivityModal, activities, userId, se
             setEditing(null);
         }
         clearModal();
+        alertService.clear()
     };
 
     const clearModal = () => {
@@ -75,7 +77,8 @@ function LogActivityModal({show, setShowLogActivityModal, activities, userId, se
     }, [editing]);
 
     const submitActivity = () => {
-        const activityLog = {
+        try{
+        const activityLogObj = {
             "activity": {
                 "id": activity.id,
                 "name": activity.name,
@@ -85,36 +88,47 @@ function LogActivityModal({show, setShowLogActivityModal, activities, userId, se
             "reflection": reflection || "",
             "rating": rating ? rating : 0,
             "date": date ? date : new Date(),
-            "id": editing ? editing.id : null
+            "id": editing ? editing.id : null,
+            "userId": userId
         };
 
-        if (activityLog.activity != null && activityLog.activity.name != null) {
+        if (activityLogObj.activity != null && activityLogObj.activity.name != null) {
             const requestOptions = {
                 method: 'PUT',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(activityLog)
+                body: JSON.stringify(activityLogObj)
             };
 
-            fetch(`http://localhost:8081/api/users/${userId}/activityLog/edit`, requestOptions)
+            fetch(`http://localhost:8081/api/activityLog/edit/${activityLogObj.id}`, requestOptions)
                 .then(async res => {
                     const data = await res.json();
 
                     if (!res.ok) {
-                        // get error message from body or default to response status
                         const error = (data && data.message) || res.status;
                         return Promise.reject(error);
                     }
-                    calculateScore();
-                    setUser(data);
+                    setUpdatedActivityLog(true);
+                    const index = activityLog.map(x => {return x.id; }).indexOf(activityLogObj.id);
+                    let updatedLog = activityLog;
+                    updatedLog[index] = activityLogObj;
+                    alertService.success('Activity log was saved successfully');
+                    setActivityLog(updatedLog);
+
                     handleClose();
                 })
                 .catch(error => {
-                    setShowError(true);
                     console.log(error)
+
+                    if(error.statusCode / 100 === 4) {
+                        alertService.error('Invalid entry, please ensure all required fields are provided');
+                    } else {
+                        alertService.error('There was an error handling your request. Please try again later.');
+                    }
                 });
-            clearModal();
         } else {
-            console.log("error in input - please provide an activity name");
+            alertService.error('Invalid entry - please provide an activity name');
+        }} catch(error) {
+            alertService.error('Invalid entry - please provide activity details');
         }
     };
 
@@ -185,10 +199,13 @@ function LogActivityModal({show, setShowLogActivityModal, activities, userId, se
                         </Form.Group>
                         <Form.Group>
                             <Col>
-                                <Form.Control type="date" id="dateField"
-                                              defaultValue={dateForPicker(date)}
-                                              onfocus={dateForPicker(date)}
-                                              onChange={(e) => setDate(dateFromDateString(e.target.value))}
+                                <Form.Control
+                                    type="date"
+                                    id="dateField"
+                                    value={date ? dateForPicker(date) : ''}
+                                    onfocus={dateForPicker(date)}
+                                    placeholder={date ? dateForPicker(date) : "dd/mm/yyyy"}
+                                    onChange={(e) => setDate(dateFromDateString(e.target.value))}
                                 />
                             </Col>
                         </Form.Group>

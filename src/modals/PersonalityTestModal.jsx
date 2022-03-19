@@ -8,9 +8,9 @@ import {BigFiveQuestions} from "./BigFiveQuestions";
 import Col from "react-bootstrap/Col";
 import withStyles from "@mui/styles/withStyles/withStyles";
 import {personalityTraitDesc, personalityTraits} from "../constants";
+import {alertService} from "../alert/alert-service";
 
 function PersonalityTestModal({takePersonalityTest, setTakePersonalityTest, user, setUser}) {
-    const [showError, setShowError] = useState(false); //TODO - implement error handling
     const [answers, setAnswers] = useState(new Array(50).fill(3));
     const [currentPage, setCurrentPage] = useState(0);
     const [bounds, setBounds] = useState({start: 0, end: 5});
@@ -142,11 +142,15 @@ function PersonalityTestModal({takePersonalityTest, setTakePersonalityTest, user
                     return Promise.reject(error);
                 }
                 setUser(data);
+                alertService.success('Personality scores updated successfully');
                 handleClose();
             })
             .catch(error => {
-                setShowError(true);
-                console.log(error)
+                if(error.statusCode / 100 === 4) {
+                    alertService.error('Invalid input, please ensure all required fields are provided');
+                } else {
+                    alertService.error('There was an error handling your request. Please try again later.');
+                }
             });
         resetTestModal();
     };
@@ -157,6 +161,7 @@ function PersonalityTestModal({takePersonalityTest, setTakePersonalityTest, user
             backdrop="static"
             keyboard={false}
             dialogClassName="modal-90w"
+            size={"lg"}
             centered
         >
             <Modal.Header>
@@ -192,9 +197,10 @@ function PersonalityTestModal({takePersonalityTest, setTakePersonalityTest, user
                                                     min={1}
                                                     max={5}
                                                     step={null}
-                                                    defaultValue={answers[index]}
+                                                    key={index}
+                                                    defaultValue={answers[bounds.start + index]}
                                                     valueLabelDisplay="auto"
-                                                    onChangeCommitted={(e, val) => updateAnswer(val, index)}
+                                                    onChangeCommitted={(e, val) => updateAnswer(val, bounds.start + index)}
                                                 />
                                             </div>
                                         </Col>
@@ -213,7 +219,7 @@ function PersonalityTestModal({takePersonalityTest, setTakePersonalityTest, user
                     <p class="align-self-center my-1">Page {currentPage} of 10</p>
                 </Col>
                 <Col className="d-flex justify-content-end">
-                    <Button className="mx-1" variant="outline-primary" onClick={goForward}>{currentPage === 0 ? "Start" : "Next"}</Button>
+                    <Button className="mx-1" variant="outline-primary" disabled={currentPage === 10} onClick={goForward}>{currentPage === 0 ? "Start" : "Next"}</Button>
                     <Button variant="primary" onClick={submitTest} disabled={!formComplete}>Submit</Button>
                 </Col>
             </Modal.Footer>

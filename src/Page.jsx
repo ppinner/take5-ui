@@ -11,37 +11,43 @@ import PrivacyModal from "./modals/PrivacyModal";
 import HelpModal from "./modals/HelpModal";
 import ActivityHistoryModal from "./modals/ActivityHistoryModal";
 import CreateActivityModal from "./modals/CreateActivityModal";
-import moment from "moment";
 import GoalProgressModal from "./modals/GoalProgressModal";
+import {Alert} from "./alert/Alert";
+import {alertService} from "./alert/alert-service";
 
 const today = new Date();
 const weekAgo = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
 
-const renderPageContent = (showProfile, user, setUser, setShowModal, activities, userScore, setShowGoalProgress) => {
+const renderPageContent = (showProfile, user, setUser, setShowModal, activities, userScore, setShowGoalProgress, activityLog, setActivityLog, recommendation) => {
     if (showProfile) {
-        return <ProfilePageContent user={user} setUser={setUser} activities={activities}/>;
+        return <ProfilePageContent user={user} setUser={setUser} activityLog={activityLog} activities={activities}/>;
     } else {
-        return <HomePageContent user={user} userScore={userScore} today={today} setShowModal={setShowModal}
-                                getEntriesForPastWeek={getEntriesForPastWeek} setShowGoalProgress={setShowGoalProgress}/>;
+        return <HomePageContent user={user} userScore={userScore} activityLog={activityLog} today={today}
+                                setShowModal={setShowModal}
+                                getEntriesForPastWeek={getEntriesForPastWeek}
+                                setShowGoalProgress={setShowGoalProgress}
+                                recommendation={recommendation}/>;
     }
 };
 
-const getEntriesForPastWeek = (user) => {
+const getEntriesForPastWeek = (activityLog) => {
     const today = new Date();
     const weekAgo = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
 
-    return getEntriesForTimePeriod(user, today, weekAgo)
+    return getEntriesForTimePeriod(activityLog, weekAgo, today)
 };
 
-const getEntriesForTimePeriod = (user, start, end) => {
-    const today = new Date(start);
-    const weekAgo = new Date(end);
+const getEntriesForTimePeriod = (activityLog, start, end) => {
+    const after = new Date(end);
+    const before = new Date(start);
     let activities;
 
-    if (user != null && user.activityLog != null) {
-        activities = user.activityLog.filter(log => {
-            return weekAgo <= log.date <= today
+    if (activityLog != null) {
+        activities = activityLog.filter(log => {
+            return before <= log.date <= after
         });
+    } else {
+        activities = [];
     }
 
     return activities
@@ -62,14 +68,6 @@ const getUpdatedScoreForActivity = (focus, currentScore, goals) => {
     return score
 };
 
-const startScores = {
-    connection: 0,
-    mindfulness: 0,
-    physicalActivity: 0,
-    giving: 0,
-    learning: 0
-};
-
 function Page() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [showProfile, setShowProfile] = useState(false);
@@ -79,15 +77,17 @@ function Page() {
     const [showHelp, setShowHelp] = useState(false);
     const [showLogActivityModal, setShowLogActivityModal] = useState(false);
     const [showHistory, setShowHistory] = useState(false);
+    const [editedActivityLog, setEditedActivityLog] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false); //TODO - implement loading icon
-    const [error, setError] = useState(false); //TODO - implement error notifications
     const [userId, setUserId] = useState(null);
     const [user, setUser] = useState(null);
     const [activities, setActivities] = useState(null);
     const [showCreateActivityModal, setCreateActivityModal] = useState(false);
-    const [userScore, setScore] = useState(startScores);
+    const [userScore, setScore] = useState(null);
+    const [activityLog, setActivityLog] = useState(null);
+    const [recommendation, setRecommendation] = useState(null);
 
-    const calculateScore = (start, end) => {
+    const calculateScore = (logs, start, end) => {
         const counter = {
             connection: 0,
             mindfulness: 0,
@@ -95,25 +95,24 @@ function Page() {
             giving: 0,
             learning: 0
         };
-        getEntriesForTimePeriod(user, start, end).map(entry => {
-            getUpdatedScoreForActivity(user.focus, counter, entry.activity.category)
+        getEntriesForTimePeriod(logs, start, end).map(entry => {
+            return getUpdatedScoreForActivity(user.focus, counter, entry.activity.category)
         });
-        setScore(counter);
         return counter;
     };
 
     useEffect(() => {
-        if (userId != null ) {
+        if (userId != null) {
             fetch(`http://localhost:8081/api/users/${userId}`)
                 .then(res => res.json())
                 .then(result => {
                     let userUpdate = result;
-                    const score = calculateScore(today, weekAgo);
-                    const scoreKey = moment(today).format('YYYY-MM-DDT00:00:00.000+00:00');
-                    userUpdate.scores[scoreKey] = score;
-                    setUser(userUpdate)
+                    setUser(userUpdate);
+                    setEditedActivityLog(true);
                 })
-                .catch((error) => console.log(error));
+                .catch((error) => {
+                    alertService.error(`Could not retrieve user details for ${userId}`);
+                });
         }
     }, [userId]);
 
@@ -123,10 +122,45 @@ function Page() {
     }, [userId]);
 
     useEffect(() => {
+        if (user != null) {
+            fetch(`http://localhost:1234/recommender/user/${user.id}`)
+                .then(res => res.json())
+                .then(result => {
+                    setRecommendation(result)
+                })
+                .catch((error) => {
+                    console.log(error);
+                    alertService.error('Could not get recommendation at this time');
+                });
+        }
+    }, [userId]);
+
+    useEffect(() => {
+        if (userId != null && editedActivityLog) {
+            fetch(`http://localhost:8081/api/activityLog/user/${userId}`)
+                .then(res => res.json())
+                .then(result => {
+                    setActivityLog(result);
+                    setScore(calculateScore(result, weekAgo, today));
+                    setEditedActivityLog(false)
+                })
+                .catch((error) => {
+                    if(error.statusCode / 100 === 4) {
+                        alertService.error('Invalid input, please ensure all required fields are provided');
+                    } else {
+                        alertService.error('There was an error handling your request. Please try again later.');
+                    }
+                });
+        }
+    }, [editedActivityLog, userId]);
+
+    useEffect(() => {
         fetch(`http://localhost:8081/api/activities`)
             .then(res => res.json())
             .then(result => setActivities(result))
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                alertService.error('Could not retrieve activities data');
+            });
     }, []);
 
     useEffect(() => {
@@ -142,7 +176,9 @@ function Page() {
 
             fetch(`http://localhost:8081/api/users/${user.id}/score`, requestOptions)
                 .then(res => res.json())
-                .catch((error) => console.log(error))
+                .catch((error) => {
+                    alertService.error('Could not update score');
+                })
         }
     }, [userScore]);
 
@@ -155,21 +191,26 @@ function Page() {
                         setShowModal={setShowLogActivityModal}
                         setShowHistory={setShowHistory}
                         setShowGoalProgress={setShowGoalProgress}
+                        setUserId={setUserId}
                 />
-                {renderPageContent(showProfile, user, setUser, setShowLogActivityModal, activities, userScore, setShowGoalProgress)}
+                <Alert />
+                {renderPageContent(showProfile, user, setUser, setShowLogActivityModal, activities, userScore, setShowGoalProgress, activityLog, setActivityLog, recommendation)}
 
-                {showHistory ? <ActivityHistoryModal show={showHistory} setShowHistory={setShowHistory} user={user}
-                                                     setShowActivityModal={setShowLogActivityModal} setUser={setUser}
-                                                     setEditActivityLog={setEditActivityLog}
-                                                     calculateScore={() => calculateScore(today, weekAgo)}/> : null}
+                {showHistory ?
+                    <ActivityHistoryModal show={showHistory} setShowHistory={setShowHistory} activityLog={activityLog}
+                                          setShowActivityModal={setShowLogActivityModal} setUser={setUser}
+                                          setEditActivityLog={setEditActivityLog}
+                                          setActivityLog={setActivityLog}
+                                          setUpdatedActivityLog={setEditedActivityLog}/> : null}
                 {showLogActivityModal ?
                     <LogActivityModal show={showLogActivityModal} setShowLogActivityModal={setShowLogActivityModal}
                                       activities={activities} userId={userId}
                                       setUser={setUser} user={user}
-                                      calculateScore={() => calculateScore(today, weekAgo)}
                                       editing={editActivityLog} setEditing={setEditActivityLog}
                                       setShowCreateActivityModal={setCreateActivityModal}
-                                      setShowHistoryModal={setShowHistory}/> : null}
+                                      setShowHistoryModal={setShowHistory} setUpdatedActivityLog={setEditedActivityLog}
+                                      activityLog={activityLog} setActivityLog={setActivityLog}
+                    /> : null}
                 {showCreateActivityModal ? <CreateActivityModal show={showCreateActivityModal}
                                                                 setShowCreateActivityModal={setCreateActivityModal}
                                                                 activities={activities} setActivities={setActivities}

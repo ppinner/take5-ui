@@ -5,10 +5,18 @@ import Button from "react-bootstrap/Button";
 import DropdownButton from "react-bootstrap/DropdownButton";
 import Dropdown from "react-bootstrap/Dropdown";
 import React from "react";
+import {alertService} from "./alert/alert-service";
 
-function Header({showProfile, setShowProfile, setIsLoggedIn, setShowModal, setShowHistory, setShowGoalProgress}) {
-    const toggleShowProfile = () => setShowProfile(!showProfile);
-    const logout = () => setIsLoggedIn(false);
+function Header({showProfile, setShowProfile, setIsLoggedIn, setShowModal, setShowHistory, setShowGoalProgress, setUserId}) {
+    const toggleShowProfile = () => {
+        setShowProfile(!showProfile);
+        alertService.clear()
+    };
+    const logout = () => {
+        setUserId(null);
+        setIsLoggedIn(false);
+        alertService.clear()
+    };
 
     return (
             <Row className="App-header mt-4">

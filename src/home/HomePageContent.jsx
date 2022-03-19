@@ -6,8 +6,9 @@ import {Col, Container, Row} from 'react-bootstrap';
 import RadarChart from 'react-svg-radar-chart';
 import 'react-svg-radar-chart/build/css/index.css';
 import {goals} from "../constants";
+import Recommendation from "../Recommendation";
 
-function HomePageContent({userScore, user, setShowModal, getEntriesForPastWeek, setShowGoalProgress}) {
+function HomePageContent({userScore, user, activityLog, setShowModal, getEntriesForPastWeek, setShowGoalProgress, recommendation}) {
     const [responseMessage, setResponseMessage] = useState("Welcome back");
     const [graphData, setGraphData] = useState([]);
 
@@ -24,36 +25,38 @@ function HomePageContent({userScore, user, setShowModal, getEntriesForPastWeek, 
         });
         setResponseMessage(responseMessage);
 
-    }, [user]);
+    }, [activityLog]);
 
     useEffect(() => {
-        setGraphData([
-            {
-                data: {
-                    mindfulness: userScore.mindfulness,
-                    connection: userScore.connection,
-                    physicalActivity: userScore.physicalActivity,
-                    learning: userScore.learning,
-                    giving: userScore.giving
-                },
-                meta: {
-                    color: '#5D88BB',
-                    fill: '#B3CBE4'
+        if(userScore != null) {
+            setGraphData([
+                {
+                    data: {
+                        mindfulness: userScore.mindfulness,
+                        connection: userScore.connection,
+                        physicalActivity: userScore.physicalActivity,
+                        learning: userScore.learning,
+                        giving: userScore.giving
+                    },
+                    meta: {
+                        color: '#5D88BB',
+                        fill: '#B3CBE4'
+                    }
                 }
-            }
-        ])
-    }, [user]);
+            ])
+        }
+    }, [activityLog, userScore]);
 
     const activityCount = () => {
-        if(user != null) {
-           return getEntriesForPastWeek(user).length
-        } else {
+        try {
+            return getEntriesForPastWeek(activityLog).length
+        } catch (e) {
             return 0
         }
     };
 
     return (
-        <Container className="Home">
+        <Container className="Home mt-3">
             <Row className="greeting">
                 <Col xs={1}/>
                 <Col>
@@ -85,10 +88,10 @@ function HomePageContent({userScore, user, setShowModal, getEntriesForPastWeek, 
                     </Row>
                     <Row className="recommendationSection mt-5">
                         <h4>Recommended for you...</h4>
-                        <Card className="recommendationCard py-2">
-                            <Card.Title>Basketball</Card.Title>
-                            <Card.Text className="goals">Physical Activity, Connection</Card.Text>
-                        </Card>
+                        {user ?
+                            <Recommendation recommendation={recommendation}/>
+                            : 'Calculating.. check back later!'
+                        }
                     </Row>
                 </Col>
                 <Col/>

@@ -1,11 +1,12 @@
 import '../Page.css';
 import Button from "react-bootstrap/Button";
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import {Col} from "react-bootstrap";
 import Select from 'react-select';
 import {goals } from "../constants";
+import {alertService} from "../alert/alert-service";
 
 function CreateActivityModal({show, setShowCreateActivityModal, activities, setActivities, setShowActivityLogModal}) {
     const [showError, setShowError] = useState(false); //TODO - implement error handling
@@ -64,12 +65,11 @@ function CreateActivityModal({show, setShowCreateActivityModal, activities, setA
                     handleClose();
                 })
                 .catch(error => {
-                    setShowError(true);
-                    console.log(error)
+                    alertService.error('Could not retrieve activities');
                 });
             handleClose();
         } else {
-            console.log("error in input - please provide an activity name");
+            alertService.error('Invalid input - please ensure name, description and categories are provided');
         }
     };
 

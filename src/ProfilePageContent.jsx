@@ -12,6 +12,8 @@ import Popover from 'react-bootstrap/Popover';
 import moment from "moment";
 import PersonalityTestModal from "./modals/PersonalityTestModal";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import {alertService} from "./alert/alert-service";
+import InvalidInputError from "./InvalidInputError.js";
 
 const toggleEditable = (editable, setEditable) => setEditable(!editable);
 
@@ -27,12 +29,17 @@ const calculateAge = (date) => {
     return moment().diff(date, 'years', false);
 };
 
-function ProfilePageContent({user, setUser, activities}) {
+function ProfilePageContent({user, setUser, activityLog, activities}) {
     const [editable, setEditable] = useState(false);
     const [takePersonalityTest, setTakePersonalityTest] = useState(false);
     const [name, setName] = useState(user.name);
     const [dob, setDob] = useState(user.dob);
     const [goal, setGoal] = useState(user.focus);
+    const [originalValues, setOriginalValues] = useState({
+        name: user.name,
+        dob: user.dob,
+        goal: user.focus
+    });
     const [goalChanged, setGoalChanged] = useState(false);
     const [mostPopularGoal, setMostPopularGoal] = useState();
     const [mostPopularActivity, setMostPopularActivity] = useState();
@@ -42,40 +49,54 @@ function ProfilePageContent({user, setUser, activities}) {
     const monthAgo = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate()); //TODO - duplicated, move to utils
 
     const saveChanges = () => {
-        //TODO - error handling with incorrect inputs
-        const updatedUser = user;
-        if (name !== undefined)
-            updatedUser.name = name;
-        if (dob.isNaN())
-            updatedUser.dob = dateFromDateString(dob);
-        updatedUser.focus = goal;
+        try {
+            const updatedUser = user;
+            if (name != undefined)
+                updatedUser.name = name;
+            if (dob != NaN)
+                updatedUser.dob = dateFromDateString(dob);
+            updatedUser.focus = goal;
 
-        if(goalChanged){
-            updatedUser.focusStart = today;
+            if (goalChanged) {
+                updatedUser.focusStart = today;
+            }
+
+            if (updatedUser.dob === "Invalid date") {
+                throw new InvalidInputError("Invalid date input");
+            }
+
+            setUser(updatedUser);
+            const requestOptions = {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(updatedUser)
+            };
+
+            fetch(`http://localhost:8081/api/users/${user.id}`, requestOptions)
+                .then(res => {
+                    return res.json()
+                })
+                .catch((error) => {
+                    if (error.statusCode / 100 === 4) {
+                        alertService.error('Invalid input, please ensure all required fields are provided');
+                    } else {
+                        alertService.error('There was an error handling your request. Please try again later.');
+                    }
+                });
+
+            toggleEditable(editable, setEditable);
+        } catch(e) {
+            alertService.error('There was an error with values input. Please ensure they are correct');
         }
-
-        setUser(updatedUser);
-        const requestOptions = {
-            method: 'PUT',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(updatedUser)
-        };
-
-        fetch(`http://localhost:8081/api/users/${user.id}`, requestOptions)
-            .then(res => res.json())
-            .catch((error) => console.log(error));
-
-
-        toggleEditable(editable, setEditable);
     };
 
     useEffect(() => {
-        if (user != null && user.activityLog != null) {
+        if (user != null && activityLog != null) {
             let activityCounts = {};
             let goalCounts = {};
-            for (let i = 0; i < user.activityLog.length; i++) {
-                if (user.activityLog[i].activity.id != null) {
-                    const activity = user.activityLog[i].activity;
+            for (let i = 0; i < activityLog.length; i++) {
+                if (activityLog[i].activity.id != null) {
+                    const activity = activityLog[i].activity;
                     activityCounts[activity.id] = (activityCounts[activity.id] || 0) + 1;
                     activity.category.map((goal) => {
                         goalCounts[goal] = (goalCounts[goal] || 0) + 1;
@@ -93,14 +114,14 @@ function ProfilePageContent({user, setUser, activities}) {
                     } catch {
                         return null
                     }
-                    });
+                });
 
                 setMostPopularGoal(() => {
                     try {
-                    const mostPopularGoal = Object.keys(goalCounts).reduce((max, key) => {
-                        return (max === undefined || goalCounts[key] > goalCounts[max]) ? +key : max
-                    });
-                    return goals[mostPopularGoal];
+                        const mostPopularGoal = Object.keys(goalCounts).reduce((max, key) => {
+                            return (max === undefined || goalCounts[key] > goalCounts[max]) ? +key : max
+                        });
+                        return goals[mostPopularGoal];
                     } catch {
                         return null
                     }
@@ -145,14 +166,14 @@ function ProfilePageContent({user, setUser, activities}) {
                             return (max === undefined || diffs[key] > diffs[max]) ? +key : max
                         });
                         return goals[mostImprovedGoal]
-                    } catch (e){
+                    } catch (e) {
                         console.log(e);
                         return null
                     }
                 })
             }
         }
-    }, [user]);
+    }, [activityLog]);
 
 
     const popover = ((trait) => {
@@ -165,7 +186,7 @@ function ProfilePageContent({user, setUser, activities}) {
     });
 
     return (
-        <Container className="Profile">
+        <Container className="Profile mt-3">
             <Row>
                 <Col xs={1}/>
                 <Col>
@@ -190,10 +211,12 @@ function ProfilePageContent({user, setUser, activities}) {
                             <Form.Group as={Row} className="mb-3 align-items-center" controlId="dobInput">
                                 <Form.Label column lg={4}>Date of Birth:</Form.Label>
                                 <Col>
-                                    <Form.Control type="date" id="dobField"
-                                                  defaultValue={dateForPicker(dob)}
-                                                  onfocus={dateForPicker(dob)}
-                                                  onChange={(e) => setDob(dateFromDateString(e.target.value))}
+                                    <Form.Control
+                                        type="date"
+                                        value={dob ? dateForPicker(dob) : ''}
+                                        onfocus={dateForPicker(dob)}
+                                        placeholder={dob ? dateForPicker(dob) : "dd/mm/yyyy"}
+                                        onChange={(e) => setDob(dateFromDateString(e.target.value))}
                                     />
                                 </Col>
                             </Form.Group>
@@ -248,11 +271,11 @@ function ProfilePageContent({user, setUser, activities}) {
                     <Card className="personalityResults">
                         <Card.Body>
                             <Row>
-                                { user.personality ?
+                                {user.personality ?
                                     Object.entries(user.personality).map(trait => {
                                         return (
                                             <OverlayTrigger
-                                                trigger="['hover', 'focus']"
+                                                trigger={['hover', 'focus']}
                                                 key={trait}
                                                 placement="top"
                                                 overlay={popover(trait[0])}

@@ -12,10 +12,11 @@ import TableCell from "@mui/material/TableCell/TableCell";
 import TableBody from "@mui/material/TableBody/TableBody";
 import {emoticons} from "../constants";
 import TablePagination from "@mui/material/TablePagination/TablePagination";
+import {alertService} from "../alert/alert-service";
 
 const Moment = require('moment');
 
-function ActivityHistoryModal({show, setShowHistory, user, setShowActivityModal, setUser, setEditActivityLog, calculateScore}) {
+function ActivityHistoryModal({show, setShowHistory, activityLog, setShowActivityModal, setUser, setEditActivityLog, setActivityLog, setUpdatedActivityLog}) {
     const [entriesPerPage, setEntriesPerPage] = useState(5);
     const [currentPage, setPage] = useState(0);
 
@@ -31,27 +32,25 @@ function ActivityHistoryModal({show, setShowHistory, user, setShowActivityModal,
     const handleClose = () => {
         setPage(0);
         setShowHistory(false);
+        alertService.clear();
     };
 
     const deleteLog = (id) => {
         const requestOptions = {
             method: 'DELETE',
+            headers: {
+                'Content-Type': 'text/plain'
+            }
         };
 
-        fetch(`http://localhost:8081/api/users/${user.id}/activityLog/delete/${id}`, requestOptions)
-            .then(async res => {
-                const data = await res.json();
+        fetch(`http://localhost:8081/api/activityLog/delete/${id}`, requestOptions)
+            .then(() => {
+                setUpdatedActivityLog(true);
+                alertService.success('Log was deleted successfully');
 
-                if (!res.ok) {
-                    // get error message from body or default to response status
-                    const error = (data && data.message) || res.status;
-                    return Promise.reject(error);
-                }
-                calculateScore();
-                setUser(data);
             })
             .catch(error => {
-                console.log(error)
+                alertService.error('Could not delete activity log');
             });
     };
 
@@ -67,6 +66,7 @@ function ActivityHistoryModal({show, setShowHistory, user, setShowActivityModal,
             backdrop="static"
             keyboard={false}
             dialogClassName="modal-90w"
+            size="lg"
             centered
         >
             <Modal.Header>
@@ -88,8 +88,8 @@ function ActivityHistoryModal({show, setShowHistory, user, setShowActivityModal,
                         </TableHead>
                         <TableBody>
                             {
-                                user.activityLog != null ?
-                                    user.activityLog
+                                activityLog != null ?
+                                    activityLog
                                         .sort((a, b) => new Moment(b.date).diff(new Moment(a.date)))
                                         .slice(currentPage * entriesPerPage, currentPage * entriesPerPage + entriesPerPage)
                                         .map((log) => {
@@ -117,10 +117,10 @@ function ActivityHistoryModal({show, setShowHistory, user, setShowActivityModal,
                         </TableBody>
                     </Table>
                     <TablePagination
-                        style={{ verticalAlign: "text-top"}}
+                        style={{verticalAlign: "text-top"}}
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
-                        count={user.activityLog.length}
+                        count={activityLog.length}
                         rowsPerPage={entriesPerPage}
                         page={currentPage}
                         onPageChange={handleChangePage}
