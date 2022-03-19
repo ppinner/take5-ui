@@ -6,7 +6,6 @@ import LogActivityModal from "./modals/LogActivityModal";
 import Footer from "./Footer";
 import HomePageContent from "./home/HomePageContent";
 import ProfilePageContent from "./ProfilePageContent";
-import Login from "./login/Login";
 import PrivacyModal from "./modals/PrivacyModal";
 import HelpModal from "./modals/HelpModal";
 import ActivityHistoryModal from "./modals/ActivityHistoryModal";
@@ -14,6 +13,7 @@ import CreateActivityModal from "./modals/CreateActivityModal";
 import GoalProgressModal from "./modals/GoalProgressModal";
 import {Alert} from "./alert/Alert";
 import {alertService} from "./alert/alert-service";
+import {useNavigate, useParams} from "react-router";
 
 const today = new Date();
 const weekAgo = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
@@ -69,7 +69,9 @@ const getUpdatedScoreForActivity = (focus, currentScore, goals) => {
 };
 
 function Page() {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    let params = useParams();
+    const [userId, setUserId] = useState(params.userId.substring(1));
+    let navigate = useNavigate();
     const [showProfile, setShowProfile] = useState(false);
     const [showGoalProgress, setShowGoalProgress] = useState(false);
     const [showPrivacy, setShowPrivacy] = useState(false);
@@ -79,7 +81,6 @@ function Page() {
     const [showHistory, setShowHistory] = useState(false);
     const [editedActivityLog, setEditedActivityLog] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false); //TODO - implement loading icon
-    const [userId, setUserId] = useState(null);
     const [user, setUser] = useState(null);
     const [activities, setActivities] = useState(null);
     const [showCreateActivityModal, setCreateActivityModal] = useState(false);
@@ -102,28 +103,31 @@ function Page() {
     };
 
     useEffect(() => {
-        if (userId != null) {
+        if(userId != null) {
+            console.log("searching for " + userId);
             fetch(`http://localhost:8081/api/users/${userId}`)
                 .then(res => res.json())
-                .then(result => {
-                    let userUpdate = result;
-                    setUser(userUpdate);
-                    setEditedActivityLog(true);
-                })
+                .then(result => setUser(result))
                 .catch((error) => {
-                    alertService.error(`Could not retrieve user details for ${userId}`);
+                    if(error.statusCode / 100 === 4) {
+                        alertService.error('Invalid input, please ensure all required fields are provided');
+                    } else {
+                        alertService.error('There was an error handling your request. Please try again later.');
+                    }
                 });
-        }
-    }, [userId]);
 
-    useEffect(() => {
-        if(!isLoggedIn && userId != null)
-            setIsLoggedIn(true)
-    }, [userId]);
+            fetch(`http://localhost:8081/api/activityLog/user/${userId}`)
+                .then(res => res.json())
+                .then(result => setActivityLog(result))
+                .catch((error) => {
+                    if(error.statusCode / 100 === 4) {
+                        alertService.error('Invalid input, please ensure all required fields are provided');
+                    } else {
+                        alertService.error('There was an error handling your request. Please try again later.');
+                    }
+                });
 
-    useEffect(() => {
-        if (user != null) {
-            fetch(`http://localhost:1234/recommender/user/${user.id}`)
+            fetch(`http://localhost:1234/recommender/user/${userId}`)
                 .then(res => res.json())
                 .then(result => {
                     setRecommendation(result)
@@ -133,7 +137,7 @@ function Page() {
                     alertService.error('Could not get recommendation at this time');
                 });
         }
-    }, [userId]);
+    }, []);
 
     useEffect(() => {
         if (userId != null && editedActivityLog) {
@@ -145,7 +149,7 @@ function Page() {
                     setEditedActivityLog(false)
                 })
                 .catch((error) => {
-                    if(error.statusCode / 100 === 4) {
+                    if (error.statusCode / 100 === 4) {
                         alertService.error('Invalid input, please ensure all required fields are provided');
                     } else {
                         alertService.error('There was an error handling your request. Please try again later.');
@@ -182,48 +186,44 @@ function Page() {
         }
     }, [userScore]);
 
-    if (isLoggedIn) {
-        return (
-            <Container className="App">
-                <Header showProfile={showProfile}
-                        setShowProfile={setShowProfile}
-                        setIsLoggedIn={setIsLoggedIn}
-                        setShowModal={setShowLogActivityModal}
-                        setShowHistory={setShowHistory}
-                        setShowGoalProgress={setShowGoalProgress}
-                        setUserId={setUserId}
-                />
-                <Alert />
-                {renderPageContent(showProfile, user, setUser, setShowLogActivityModal, activities, userScore, setShowGoalProgress, activityLog, setActivityLog, recommendation)}
+    return (
+        <Container className="App">
+            <Header showProfile={showProfile}
+                    setShowProfile={setShowProfile}
+                    setShowModal={setShowLogActivityModal}
+                    setShowHistory={setShowHistory}
+                    setShowGoalProgress={setShowGoalProgress}
+                    navigate={navigate}
+            />
+            <Alert/>
+            {renderPageContent(showProfile, user, setUser, setShowLogActivityModal, activities, userScore, setShowGoalProgress, activityLog, setActivityLog, recommendation)}
 
-                {showHistory ?
-                    <ActivityHistoryModal show={showHistory} setShowHistory={setShowHistory} activityLog={activityLog}
-                                          setShowActivityModal={setShowLogActivityModal} setUser={setUser}
-                                          setEditActivityLog={setEditActivityLog}
-                                          setActivityLog={setActivityLog}
-                                          setUpdatedActivityLog={setEditedActivityLog}/> : null}
-                {showLogActivityModal ?
-                    <LogActivityModal show={showLogActivityModal} setShowLogActivityModal={setShowLogActivityModal}
-                                      activities={activities} userId={userId}
-                                      setUser={setUser} user={user}
-                                      editing={editActivityLog} setEditing={setEditActivityLog}
-                                      setShowCreateActivityModal={setCreateActivityModal}
-                                      setShowHistoryModal={setShowHistory} setUpdatedActivityLog={setEditedActivityLog}
-                                      activityLog={activityLog} setActivityLog={setActivityLog}
-                    /> : null}
-                {showCreateActivityModal ? <CreateActivityModal show={showCreateActivityModal}
-                                                                setShowCreateActivityModal={setCreateActivityModal}
-                                                                activities={activities} setActivities={setActivities}
-                                                                setShowActivityLogModal={setShowLogActivityModal}/> : null}
-                {showPrivacy ? <PrivacyModal show={showPrivacy} setShowPrivacy={setShowPrivacy}/> : null}
-                {showHelp ? <HelpModal show={showHelp} setShowHelp={setShowHelp}/> : null}
-                {showGoalProgress ? <GoalProgressModal show={showGoalProgress} setShowProgress={setShowGoalProgress}
-                                                       user={user}/> : null}
-                <Footer setShowPrivacy={setShowPrivacy} setShowHelp={setShowHelp}/>
-            </Container>
-        );
-    }
-    return <Login setIsLoggedIn={setIsLoggedIn} userId={userId} setUserId={setUserId} setUser={setUser}/>;
+            {showHistory ?
+                <ActivityHistoryModal show={showHistory} setShowHistory={setShowHistory} activityLog={activityLog}
+                                      setShowActivityModal={setShowLogActivityModal} setUser={setUser}
+                                      setEditActivityLog={setEditActivityLog}
+                                      setActivityLog={setActivityLog}
+                                      setUpdatedActivityLog={setEditedActivityLog}/> : null}
+            {showLogActivityModal ?
+                <LogActivityModal show={showLogActivityModal} setShowLogActivityModal={setShowLogActivityModal}
+                                  activities={activities} userId={userId}
+                                  setUser={setUser} user={user}
+                                  editing={editActivityLog} setEditing={setEditActivityLog}
+                                  setShowCreateActivityModal={setCreateActivityModal}
+                                  setShowHistoryModal={setShowHistory} setUpdatedActivityLog={setEditedActivityLog}
+                                  activityLog={activityLog} setActivityLog={setActivityLog}
+                /> : null}
+            {showCreateActivityModal ? <CreateActivityModal show={showCreateActivityModal}
+                                                            setShowCreateActivityModal={setCreateActivityModal}
+                                                            activities={activities} setActivities={setActivities}
+                                                            setShowActivityLogModal={setShowLogActivityModal}/> : null}
+            {showPrivacy ? <PrivacyModal show={showPrivacy} setShowPrivacy={setShowPrivacy}/> : null}
+            {showHelp ? <HelpModal show={showHelp} setShowHelp={setShowHelp}/> : null}
+            {showGoalProgress ? <GoalProgressModal show={showGoalProgress} setShowProgress={setShowGoalProgress}
+                                                   user={user}/> : null}
+            <Footer setShowPrivacy={setShowPrivacy} setShowHelp={setShowHelp}/>
+        </Container>
+    );
 }
 
 export default Page

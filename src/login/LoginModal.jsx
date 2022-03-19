@@ -5,10 +5,14 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import {Col, Row} from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import {alertService} from "../alert/alert-service";
 
-function LoginModal({setUserId, showLoginModal, setShowLoginModal, setIsLoggedIn}) {
+function LoginModal({showLoginModal, setShowLoginModal, setLoggedIn}) {
     const [username, setUsername] = useState(null);
     const [password, setPassword] = useState(null);
+
+    let navigate = useNavigate();
 
     const handleClose = () => {
         setShowLoginModal(false);
@@ -32,12 +36,18 @@ function LoginModal({setUserId, showLoginModal, setShowLoginModal, setIsLoggedIn
                     return res.json()
                 })
                 .then(result => {
-                    if (result != null) {
-                        setUserId(result.userId);
-                        // setIsLoggedIn(true)
+                    if (result != null && result.userId != null) {
+                        setLoggedIn(true);
+                        navigate(`/home/:${result.userId}`);
                     }
                 })
-                .catch((error) => console.log(error))
+                .catch((error) => {
+                    if(error.statusCode / 100 === 4) {
+                        alertService.error('Invalid input, please ensure correct details input');
+                    } else {
+                        alertService.error('There was an error handling your request. Please try again later.');
+                    }
+                })
         }
     };
 

@@ -1,48 +1,14 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Login.css';
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import Button from 'react-bootstrap/Button';
 import {Col, Container, Row} from 'react-bootstrap';
 import logo from "../Take5FullLogoCropped.png";
 import Image from "react-bootstrap/Image";
-import {alertService} from "../alert/alert-service";
 import LoginModal from "./LoginModal";
 
-function Login({setIsLoggedIn, setUserId, setUser, setActivityLog}) {
-    const userId = "61cc7e34b137a57798047db1"; //TODO - use actual login to get this info
+function Login({setLoggedIn}) {
     const [showLoginModal, setShowLoginModal] = useState(false);
-
-    const login = () => {
-        setUserId(userId);
-        if (userId)
-            setIsLoggedIn(true)
-    };
-
-    useEffect(() => {
-        if(userId != null) {
-            fetch(`http://localhost:8081/api/users/${userId}`)
-                .then(res => res.json())
-                .then(result => setUser(result))
-                .catch((error) => {
-                    if(error.statusCode / 100 === 4) {
-                        alertService.error('Invalid input, please ensure all required fields are provided');
-                    } else {
-                        alertService.error('There was an error handling your request. Please try again later.');
-                    }
-                });
-
-            fetch(`http://localhost:8081/api/activityLog/user/${userId}`)
-                .then(res => res.json())
-                .then(result => setActivityLog(result))
-                .catch((error) => {
-                    if(error.statusCode / 100 === 4) {
-                        alertService.error('Invalid input, please ensure all required fields are provided');
-                    } else {
-                        alertService.error('There was an error handling your request. Please try again later.');
-                    }
-                });
-        }
-    }, [userId]);
 
     return (
         <Container className="Login d-flex">
@@ -63,8 +29,7 @@ function Login({setIsLoggedIn, setUserId, setUser, setActivityLog}) {
                     </Row>
                 </Container>
             </Col>
-            <LoginModal setUserId={setUserId} showLoginModal={showLoginModal} setShowLoginModal={setShowLoginModal}
-                        setIsLoggedIn={setIsLoggedIn}/>
+            <LoginModal showLoginModal={showLoginModal} setShowLoginModal={setShowLoginModal} setLoggedIn={setLoggedIn}/>
         </Container>
     );
 }

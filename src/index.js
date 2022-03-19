@@ -2,11 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import Page from './Page';
+import App from "./App";
 
 ReactDOM.render(
 
-
-    <Page />,
+    <App />,
     document.getElementById('root')
 )
 ;

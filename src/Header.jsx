@@ -7,15 +7,14 @@ import Dropdown from "react-bootstrap/Dropdown";
 import React from "react";
 import {alertService} from "./alert/alert-service";
 
-function Header({showProfile, setShowProfile, setIsLoggedIn, setShowModal, setShowHistory, setShowGoalProgress, setUserId}) {
+function Header({showProfile, setShowProfile,setShowModal, setShowHistory, setShowGoalProgress, navigate}) {
     const toggleShowProfile = () => {
         setShowProfile(!showProfile);
         alertService.clear()
     };
     const logout = () => {
-        setUserId(null);
-        setIsLoggedIn(false);
-        alertService.clear()
+        alertService.clear();
+        navigate("/")
     };
 
     return (
