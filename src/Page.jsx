@@ -14,6 +14,7 @@ import GoalProgressModal from "./modals/GoalProgressModal";
 import {Alert} from "./alert/Alert";
 import {alertService} from "./alert/alert-service";
 import {useNavigate, useParams} from "react-router";
+import SettingsModal from "./modals/SettingsModal";
 
 const today = new Date();
 const weekAgo = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
@@ -74,6 +75,7 @@ function Page() {
     let navigate = useNavigate();
     const [showProfile, setShowProfile] = useState(false);
     const [showGoalProgress, setShowGoalProgress] = useState(false);
+    const [showSettings, setShowSettings] = useState(false);
     const [showPrivacy, setShowPrivacy] = useState(false);
     const [editActivityLog, setEditActivityLog] = useState(null);
     const [showHelp, setShowHelp] = useState(false);
@@ -88,7 +90,7 @@ function Page() {
     const [activityLog, setActivityLog] = useState(null);
     const [recommendation, setRecommendation] = useState(null);
 
-    const calculateScore = (logs, start, end) => {
+    const calculateScore = (focus, logs, start, end) => {
         const counter = {
             connection: 0,
             mindfulness: 0,
@@ -97,7 +99,7 @@ function Page() {
             learning: 0
         };
         getEntriesForTimePeriod(logs, start, end).map(entry => {
-            return getUpdatedScoreForActivity(user.focus, counter, entry.activity.category)
+            return getUpdatedScoreForActivity(focus, counter, entry.activity.category)
         });
         return counter;
     };
@@ -112,51 +114,58 @@ function Page() {
                     if(error.statusCode / 100 === 4) {
                         alertService.error('Invalid input, please ensure all required fields are provided');
                     } else {
-                        alertService.error('There was an error handling your request. Please try again later.');
+                        alertService.error('There was an error finding the user details. Please try again later.');
                     }
-                });
-
-            fetch(`http://localhost:8081/api/activityLog/user/${userId}`)
-                .then(res => res.json())
-                .then(result => setActivityLog(result))
-                .catch((error) => {
-                    if(error.statusCode / 100 === 4) {
-                        alertService.error('Invalid input, please ensure all required fields are provided');
-                    } else {
-                        alertService.error('There was an error handling your request. Please try again later.');
-                    }
-                });
-
-            fetch(`http://localhost:1234/recommender/user/${userId}`)
-                .then(res => res.json())
-                .then(result => {
-                    setRecommendation(result)
-                })
-                .catch((error) => {
-                    console.log(error);
-                    alertService.error('Could not get recommendation at this time');
                 });
         }
     }, []);
 
     useEffect(() => {
-        if (userId != null && editedActivityLog) {
+        fetch(`http://localhost:8081/api/activityLog/user/${userId}`)
+            .then(res => res.json())
+            .then(result => {
+                setActivityLog(result);
+                if(user != null){
+                    setScore(calculateScore(user.focus, result, weekAgo, today));
+                }
+            })
+            .catch((error) => {
+                if(error.statusCode / 100 === 4) {
+                    alertService.error('Invalid input, please ensure all required fields are provided');
+                } else {
+                    alertService.error("There was an error updating the activity log. We'll try again later!");
+                }
+            });
+
+        fetch(`http://localhost:1234/recommender/user/${userId}`)
+            .then(res => res.json())
+            .then(result => {
+                setRecommendation(result)
+            })
+            .catch((error) => {
+                console.log(error);
+                alertService.error('Could not get recommendation at this time');
+            });
+    }, [user]);
+
+    useEffect(() => {
+        if (editedActivityLog && user != null) {
             fetch(`http://localhost:8081/api/activityLog/user/${userId}`)
                 .then(res => res.json())
                 .then(result => {
                     setActivityLog(result);
-                    setScore(calculateScore(result, weekAgo, today));
+                    setScore(calculateScore(user.focus, result, weekAgo, today));
                     setEditedActivityLog(false)
                 })
                 .catch((error) => {
                     if (error.statusCode / 100 === 4) {
                         alertService.error('Invalid input, please ensure all required fields are provided');
                     } else {
-                        alertService.error('There was an error handling your request. Please try again later.');
+                        alertService.error('There was an error updating the activity log. Please try again later.');
                     }
                 });
         }
-    }, [editedActivityLog, userId]);
+    }, [editedActivityLog, user]);
 
     useEffect(() => {
         fetch(`http://localhost:8081/api/activities`)
@@ -218,10 +227,11 @@ function Page() {
                                                             activities={activities} setActivities={setActivities}
                                                             setShowActivityLogModal={setShowLogActivityModal}/> : null}
             {showPrivacy ? <PrivacyModal show={showPrivacy} setShowPrivacy={setShowPrivacy}/> : null}
+            {showSettings ? <SettingsModal show={showSettings} setShowSettings={setShowSettings}/> : null}
             {showHelp ? <HelpModal show={showHelp} setShowHelp={setShowHelp}/> : null}
             {showGoalProgress ? <GoalProgressModal show={showGoalProgress} setShowProgress={setShowGoalProgress}
                                                    user={user}/> : null}
-            <Footer setShowPrivacy={setShowPrivacy} setShowHelp={setShowHelp}/>
+            <Footer setShowPrivacy={setShowPrivacy} setShowHelp={setShowHelp} setShowSettings={setShowSettings}/>
         </Container>
     );
 }

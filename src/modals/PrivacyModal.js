@@ -18,7 +18,6 @@ function PrivacyModal({show, setShowPrivacy}) {
         >
             <Modal.Header>
                 <Modal.Title>Take5 Privacy Policy</Modal.Title>
-                <Button variant="secondary" onClick={handleClose}>Close</Button>
             </Modal.Header>
 
             <Modal.Body>
@@ -48,6 +47,7 @@ function PrivacyModal({show, setShowPrivacy}) {
 
             <Modal.Footer>
                 <a href='/take5-ui/src/Privacy Policy.pdf' download>Click to read the full policy</a>
+                <Button variant="secondary" onClick={handleClose}>Close</Button>
             </Modal.Footer>
         </Modal>
     );

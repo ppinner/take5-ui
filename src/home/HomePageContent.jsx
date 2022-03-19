@@ -1,7 +1,6 @@
 import './Home.css';
 import React, {useEffect, useState} from 'react';
 import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/Card';
 import {Col, Container, Row} from 'react-bootstrap';
 import RadarChart from 'react-svg-radar-chart';
 import 'react-svg-radar-chart/build/css/index.css';
