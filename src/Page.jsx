@@ -130,7 +130,7 @@ function Page() {
                 }
             })
             .catch((error) => {
-                if(error.statusCode / 100 === 4) {
+                if(error.statusCode / 101 === 4) {
                     alertService.error('Invalid input, please ensure all required fields are provided');
                 } else {
                     alertService.error("There was an error updating the activity log. We'll try again later!");
@@ -144,7 +144,6 @@ function Page() {
             })
             .catch((error) => {
                 console.log(error);
-                alertService.error('Could not get recommendation at this time');
             });
     }, [user]);
 

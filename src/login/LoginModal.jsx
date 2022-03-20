@@ -42,12 +42,10 @@ function LoginModal({showLoginModal, setShowLoginModal, setLoggedIn}) {
                     }
                 })
                 .catch((error) => {
-                    if(error.statusCode / 100 === 4) {
-                        alertService.error('Invalid input, please ensure correct details input');
-                    } else {
-                        alertService.error('There was an error handling your request. Please try again later.');
-                    }
+                    alertService.error('There was an error handling your request. Please try again later.');
                 })
+        } else {
+            alertService.error('Invalid input, please ensure correct details provided');
         }
     };
 

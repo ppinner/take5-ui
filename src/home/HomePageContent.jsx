@@ -69,15 +69,14 @@ function HomePageContent({userScore, user, activityLog, setShowModal, getEntries
                 <Col xs={1}/>
             </Row>
             <Row className="mt-2">
-                <Col/>
                 <Col xs={6}>
                     <RadarChart captions={goals}
                                 data={graphData}
-                                size={400}
+                                size={425}
                     />
                 </Col>
                 <Col xs={4} className="p-3 mt-5">
-                    <Row className="px-5">
+                    <Row className="px-5 mt-4">
                         <Button className="my-1 px-2 primaryButton" variant="primary"
                                 onClick={() => setShowModal(true)}>
                             Log an Activity
@@ -93,7 +92,6 @@ function HomePageContent({userScore, user, activityLog, setShowModal, getEntries
                         }
                     </Row>
                 </Col>
-                <Col/>
             </Row>
         </Container>
     );

@@ -8,10 +8,21 @@ import Image from "react-bootstrap/Image";
 import LoginModal from "./LoginModal";
 import SignupModal from "./SignupModal";
 import {Alert} from "../alert/Alert";
+import {alertService} from "../alert/alert-service";
 
 function Login({setLoggedIn}) {
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [showSignupModal, setShowSignupModal] = useState(false);
+
+    const showLogin = (bool) => {
+        setShowLoginModal(bool);
+        alertService.clear()
+    };
+
+    const showSignup = (bool) => {
+        setShowSignupModal(bool);
+        alertService.clear()
+    };
 
     return (
         <Container className="Login d-flex">
@@ -35,9 +46,9 @@ function Login({setLoggedIn}) {
                     <Alert/>
                 </Container>
             </Col>
-            <LoginModal showLoginModal={showLoginModal} setShowLoginModal={setShowLoginModal}
+            <LoginModal showLoginModal={showLoginModal} setShowLoginModal={showLogin}
                         setLoggedIn={setLoggedIn}/>
-            <SignupModal showSignupModal={showSignupModal} setShowSignupModal={setShowSignupModal}
+            <SignupModal showSignupModal={showSignupModal} setShowSignupModal={showSignup}
                          setShowLoginModal={setShowLoginModal}/>
         </Container>
     );

@@ -19,6 +19,7 @@ function SignupModal({showSignupModal, setShowSignupModal}) {
 
     const handleClose = () => {
         clearModal();
+        alertService.clear();
         setShowSignupModal(false);
     };
 
@@ -27,28 +28,52 @@ function SignupModal({showSignupModal, setShowSignupModal}) {
     };
 
     const clearModal = () => {
-        setName("");
-        setGoal("");
+        setName(null);
+        setGoal(null);
         setDob(null);
-        setUsername("");
-        setPassword("");
-        setPassword2("");
+        setUsername(null);
+        setPassword(null);
+        setPassword2(null);
+    };
+
+    const rollbackUserChanges = (userId) => {
+        try {
+            const requestOptions = {
+                method: 'DELETE',
+                headers: {'Content-Type': 'application/json'},
+            };
+
+            fetch(`http://localhost:8081/api/users/${userId}`, requestOptions)
+                .then(async res => {
+                    const data = await res.json();
+
+                    if (!res.ok) {
+                        // get error message from body or default to response status
+                        const error = (data && data.message) || res.status;
+                        return Promise.reject(error);
+                    }
+                })
+        } catch(e){
+            console.log("Error when rolling back signup process " + e)
+        }
     };
 
     const submitProfile = () => {
-        const account = {
-            "username": username,
-            "password": password
-        };
-
-        if (account.username != null && account.password != null && checkPasswords(password,password2)) {
-            const requestOptions = {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(account)
+        if (username != null && password != null && checkPasswords(password,password2)) {
+            const user = {
+                "name": name,
+                "focus": goal,
+                "dob": dob,
+                "focusStart": new Date(),
             };
 
-            fetch(`http://localhost:8081/api/login/create`, requestOptions)
+            const userRequestOptions = {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(user)
+            };
+
+            fetch(`http://localhost:8081/api/users`, userRequestOptions)
                 .then(async res => {
                     const data = await res.json();
 
@@ -58,21 +83,19 @@ function SignupModal({showSignupModal, setShowSignupModal}) {
                         return Promise.reject(error);
                     }
 
-                    const user = {
-                        "name": name,
-                        "focus": goal,
-                        "dob": dob,
-                        "focusStart": new Date(),
-                        "id": data._id
+                    const account = {
+                        "id": username,
+                        "password": password,
+                        "userId": data.id
                     };
 
-                    const userRequestOptions = {
+                    const requestOptions = {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify(user)
+                        body: JSON.stringify(account)
                     };
 
-                    fetch(`http://localhost:8081/api/users`, userRequestOptions)
+                    fetch(`http://localhost:8081/api/login/create`, requestOptions)
                         .then(async res => {
                             const data = await res.json();
 
@@ -84,15 +107,15 @@ function SignupModal({showSignupModal, setShowSignupModal}) {
                             handleClose();
                             alertService.success('New account created! Please login with your username and password');
                         })
-                        .catch(error => {
-                            alertService.error('Could not create user account');
+                        .catch(error=> {
+                            rollbackUserChanges(account.userId);
                         });
                 })
                 .catch(error => {
-                    alertService.error('Could not create login with provided username - it may already be in use');
+                    alertService.error('Could not create user with provided username - it may already be in use');
                 });
         } else {
-            alertService.error('Invalid input - please ensure valid email and matching passwords provided');
+            alertService.error('Error - ensure valid email and matching passwords provided');
         }
     };
 
