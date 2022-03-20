@@ -4,6 +4,7 @@
 
 .greeting {
     margin-top: 30px;
+    margin-left: 10px;
 }
 
 .recommendationSection {
@@ -20,6 +21,11 @@
 .goals {
     font-style: italic;
     font-size: 14px;
+}
+
+.graph {
+    display: inline-flex;
+    justify-self: center;
 }
 
 .primaryButton {

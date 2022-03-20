@@ -25,11 +25,11 @@ function Login({setLoggedIn}) {
     };
 
     return (
-        <Container className="Login d-flex">
+        <Row className="Login d-flex" xs={1} md={2} lg={2}>
             <Col className="header .flex-grow-1">
                 <Image src={logo} alt="Logo" className="logo"/>
             </Col>
-            <Col className="mx-4 d-flex flex-column justify-content-center">
+            <Col className="px-4 flex-column align-self-center">
                 <h1 className="mt-4">
                     Welcome
                 </h1>
@@ -50,7 +50,7 @@ function Login({setLoggedIn}) {
                         setLoggedIn={setLoggedIn}/>
             <SignupModal showSignupModal={showSignupModal} setShowSignupModal={showSignup}
                          setShowLoginModal={setShowLoginModal}/>
-        </Container>
+        </Row>
     );
 }
 

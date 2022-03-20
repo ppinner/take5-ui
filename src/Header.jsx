@@ -6,6 +6,7 @@ import DropdownButton from "react-bootstrap/DropdownButton";
 import Dropdown from "react-bootstrap/Dropdown";
 import React from "react";
 import {alertService} from "./alert/alert-service";
+import './Page.css'
 
 function Header({showProfile, setShowProfile,setShowModal, setShowHistory, setShowGoalProgress, navigate}) {
     const toggleShowProfile = () => {
@@ -18,23 +19,21 @@ function Header({showProfile, setShowProfile,setShowModal, setShowHistory, setSh
     };
 
     return (
-            <Row className="App-header mt-4">
-                <Col>
+            <Row className="App-header d-flex justify-content-xs-center" xs={1} md={2}>
+                <Col className="">
                     <Image src={logo} alt="Logo" className="logo"/>
                 </Col>
-                <Col xs={6}/>
-                <Col>
-                    <Row>
-                        <Button as={Col}
+                <Col className="flex-column mt-auto align-items-baseline mb-1">
+                    <Row xs={2} className="justify-content-end">
+                        <Button
                                 id="profileBtn"
-                                className="my-1 py-1"
+                                className="my-1 py-1 align-self-end"
                                 variant="outline-secondary"
                                 onClick={toggleShowProfile}
                         >
                             {showProfile ? "Home" : "Profile"}
                         </Button>
                         <DropdownButton
-                            as={Col}
                             variant="outline-secondary"
                             title="Actions"
                             id="actions-dropdown"

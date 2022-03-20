@@ -4,12 +4,10 @@ import React from "react";
 
 function Footer({setShowPrivacy, setShowHelp, setShowSettings}) {
     return (
-        <Row className="footer">
-            <Col xs={3}/>
+        <Row className="footer d-flex">
             <Button as={Col} className="footer-button" variant="outline-secondary" onClick={()=>setShowPrivacy(true)}>Privacy</Button>
             <Button as={Col} className="footer-button" variant="outline-secondary" onClick={()=>setShowSettings(true)}>Settings</Button>
             <Button as={Col} className="footer-button" variant="outline-secondary" onClick={()=>setShowHelp(true)}>Urgent Help</Button>
-            <Col xs={3}/>
         </Row>
     );
 }

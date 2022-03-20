@@ -182,16 +182,15 @@ function ProfilePageContent({user, setUser, activityLog, activities}) {
 
     return (
         <Container className="Profile mt-3">
-            <Row>
-                <Col xs={1}/>
+            <Row className="title">
                 <Col>
                     <h1>Your Profile</h1>
                 </Col>
             </Row>
-            <Row className="mx-2 my-4">
-                <Col className="ms-3">
+            <Row className="d-flex" sm={1} md={2} lg={2}>
+                <Col className="mt-2">
                     <Form className="personalInfo">
-                        <Form.Group as={Row} className="mb-3 align-items-center" controlId="nameInput">
+                        <Form.Group as={Row} className="mb-2 align-items-center" controlId="nameInput">
                             <Form.Label column lg={4}>Name:</Form.Label>
                             <Col>
                                 <Form.Control type="text" readOnly={!editable}
@@ -202,7 +201,7 @@ function ProfilePageContent({user, setUser, activityLog, activities}) {
                         </Form.Group>
 
                         {editable ?
-                            <Form.Group as={Row} className="mb-3 align-items-center" controlId="dobInput">
+                            <Form.Group as={Row} className="mb-2 align-items-center" controlId="dobInput">
                                 <Form.Label column lg={4}>Date of Birth:</Form.Label>
                                 <Col>
                                     <Form.Control
@@ -215,7 +214,7 @@ function ProfilePageContent({user, setUser, activityLog, activities}) {
                                 </Col>
                             </Form.Group>
                             :
-                            <Form.Group as={Row} className="mb-3 align-items-center" controlId="ageDisplay">
+                            <Form.Group as={Row} className="mb-2 align-items-center" controlId="ageDisplay">
                                 <Form.Label column id="ageLabel" lg={4}>Age:</Form.Label>
                                 <Col>
                                     <Form.Control type="text" readOnly
@@ -290,7 +289,7 @@ function ProfilePageContent({user, setUser, activityLog, activities}) {
                             onClick={() => setTakePersonalityTest(true)}>
                         {user.personality ? "Retake Personality Test" : "Take Personality Test"}</Button>
                 </Col>
-                <Col className="ms-5">
+                <Col className="mb-3 d-flex align-items-center">
                     <Card className="activitySummary">
                         <Card.Title className="mx-2 mt-2">Your Activity Summary</Card.Title>
                         <Card.Body className="summaryGrid">

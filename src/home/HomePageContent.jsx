@@ -4,9 +4,9 @@ import Button from 'react-bootstrap/Button';
 import {Col, Container, Row} from 'react-bootstrap';
 import RadarChart from 'react-svg-radar-chart';
 import 'react-svg-radar-chart/build/css/index.css';
+// import './radarChart.css';
 import {goals} from "../constants";
 import Recommendation from "../Recommendation";
-import {alertService} from "../alert/alert-service";
 
 function HomePageContent({userScore, user, activityLog, setShowModal, getEntriesForPastWeek, setShowGoalProgress, recommendation}) {
     const [responseMessage, setResponseMessage] = useState("Welcome back");
@@ -40,7 +40,8 @@ function HomePageContent({userScore, user, activityLog, setShowModal, getEntries
                     },
                     meta: {
                         color: '#5D88BB',
-                        fill: '#B3CBE4'
+                        fill: '#B3CBE4',
+                        class: "graph"
                     }
                 }
             ])
@@ -58,7 +59,6 @@ function HomePageContent({userScore, user, activityLog, setShowModal, getEntries
     return (
         <Container className="Home mt-3">
             <Row className="greeting">
-                <Col xs={1}/>
                 <Col>
                     <h1>Hello, {user ? user.name : ""}</h1>
                     {user ?
@@ -69,14 +69,14 @@ function HomePageContent({userScore, user, activityLog, setShowModal, getEntries
                 </Col>
                 <Col xs={1}/>
             </Row>
-            <Row className="mt-2 ms-3">
-                <Col xs={6}>
-                    <RadarChart captions={goals}
+            <Row className="my-2 d-flex" xs={1} md={1} sm={1} lg={2}>
+                <Col className="px-5 flex-grow-1 justify-content-center">
+                    <RadarChart className="graph" captions={goals}
                                 data={graphData}
                                 size={425}
                     />
                 </Col>
-                <Col xs={5} className="p-3 mt-5 ms-3">
+                <Col className="py-3 px-5 align-self-center">
                     <Row className="px-5 mt-4">
                         <Button className="my-1 px-2 primaryButton" variant="primary"
                                 onClick={() => setShowModal(true)}>

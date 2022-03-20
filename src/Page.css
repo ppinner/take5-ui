@@ -1,17 +1,27 @@
 #profileBtn {
     border-radius: 30px;
-    padding: 3px;
     margin-top: 5px;
     border-color: #102336;
     color: #102336;
+    max-width: 25%;
 }
 
 #actions-dropdown {
     border-radius: 30px;
-    margin-top: 0px;
-    margin-bottom: 0px;
+    margin-top: 2px;
+    margin-bottom: 2px;
     border-color: #102336;
     color: #102336;
+    max-width: 75%;
+}
+
+#actions-dropdown.dropdown {
+    width: 100%;
+}
+
+.logo {
+    height: 90px !important;
+    width: 150px !important;
 }
 
 .App-header {
@@ -28,16 +38,9 @@
     border-bottom: #5D88BB;
 }
 
-.logo {
-    /*Ratio 90:150*/
-    height: 90px;
-    width: 150px;
-}
-
 .footer {
     background-color: #B3CBE4;
     min-height: 5vh;
-    /*border-color: #D6D6D6;*/
 }
 
 .footer-button {
@@ -45,7 +48,6 @@
     border: none !important;
     border-color: #102336;
     color: #102336;
-    /*Middle button set to have borders/divider?*/
 }
 
 .markLabel {
