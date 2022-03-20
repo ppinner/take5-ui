@@ -88,7 +88,7 @@ function ActivityHistoryModal({show, setShowHistory, activityLog, setShowActivit
                         </TableHead>
                         <TableBody>
                             {
-                                activityLog != null ?
+                                activityLog.length > 0 ?
                                     activityLog
                                         .sort((a, b) => new Moment(b.date).diff(new Moment(a.date)))
                                         .slice(currentPage * entriesPerPage, currentPage * entriesPerPage + entriesPerPage)
@@ -112,7 +112,7 @@ function ActivityHistoryModal({show, setShowHistory, activityLog, setShowActivit
                                                     </IconButton>
                                                 </TableCell>
                                             </TableRow>
-                                        }) : "No activities logged yet"
+                                        }) : <div className="m-2">No activities logged yet</div>
                             }
                         </TableBody>
                     </Table>
@@ -120,7 +120,7 @@ function ActivityHistoryModal({show, setShowHistory, activityLog, setShowActivit
                         style={{verticalAlign: "text-top"}}
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
-                        count={activityLog.length}
+                        count={activityLog ? activityLog.length : 0}
                         rowsPerPage={entriesPerPage}
                         page={currentPage}
                         onPageChange={handleChangePage}

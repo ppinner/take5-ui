@@ -188,9 +188,8 @@ function ProfilePageContent({user, setUser, activityLog, activities}) {
                     <h1>Your Profile</h1>
                 </Col>
             </Row>
-            <Row className="mt-3">
-                <Col xs={1}/>
-                <Col>
+            <Row className="mx-2 my-4">
+                <Col className="ms-3">
                     <Form className="personalInfo">
                         <Form.Group as={Row} className="mb-3 align-items-center" controlId="nameInput">
                             <Form.Label column lg={4}>Name:</Form.Label>
@@ -282,7 +281,7 @@ function ProfilePageContent({user, setUser, activityLog, activities}) {
                                                 </Card>
                                             </OverlayTrigger>
                                         )
-                                    }) : "Take the personality quiz by clicking the link below"
+                                    }) : <div className="m-1">Take the personality quiz by clicking the link below</div>
                                 }
                             </Row>
                         </Card.Body>
@@ -291,7 +290,7 @@ function ProfilePageContent({user, setUser, activityLog, activities}) {
                             onClick={() => setTakePersonalityTest(true)}>
                         {user.personality ? "Retake Personality Test" : "Take Personality Test"}</Button>
                 </Col>
-                <Col className="">
+                <Col className="ms-5">
                     <Card className="activitySummary">
                         <Card.Title className="mx-2 mt-2">Your Activity Summary</Card.Title>
                         <Card.Body className="summaryGrid">
@@ -318,7 +317,6 @@ function ProfilePageContent({user, setUser, activityLog, activities}) {
                         </Card.Body>
                     </Card>
                 </Col>
-                <Col xs={1}/>
             </Row>
             <PersonalityTestModal takePersonalityTest={takePersonalityTest}
                                   setTakePersonalityTest={setTakePersonalityTest} user={user} setUser={setUser}>

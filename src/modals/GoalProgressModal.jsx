@@ -12,18 +12,21 @@ import {alertService} from "../alert/alert-service";
 
 function GoalProgressModal({show, setShowProgress, user}) {
     const getDataFromScoreHistory = () => {
-        const datapoints = Object.entries(user.scores)
-            .filter(scoreLog => {
-                return moment(scoreLog[0]) >= moment(user.focusStart)
-            }).map(log => {
-                return {
-                    x: moment(log[0]),
-                    y: log[1][user.focus]
-                }
-            }).sort((a, b) => {
-                return a.x - b.x;
-            });
-        return datapoints.sort()
+        if(user.scores != null) {
+            const datapoints = Object.entries(user.scores)
+                .filter(scoreLog => {
+                    return moment(scoreLog[0]) >= moment(user.focusStart)
+                }).map(log => {
+                    return {
+                        x: moment(log[0]),
+                        y: log[1][user.focus]
+                    }
+                }).sort((a, b) => {
+                    return a.x - b.x;
+                });
+            return datapoints.sort()
+        }
+        return []
     };
     const [graphData, setGraphData] = useState([]);
 
@@ -159,6 +162,8 @@ function GoalProgressModal({show, setShowProgress, user}) {
             } else {
                 return `Based on your current progress, ${getDateReachGoal()}`
             }
+        } else {
+            return "Add some logs to see progress!" //TODO - add hyperlink to add activity modal?
         }
     };
 

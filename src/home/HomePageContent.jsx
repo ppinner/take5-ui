@@ -6,6 +6,7 @@ import RadarChart from 'react-svg-radar-chart';
 import 'react-svg-radar-chart/build/css/index.css';
 import {goals} from "../constants";
 import Recommendation from "../Recommendation";
+import {alertService} from "../alert/alert-service";
 
 function HomePageContent({userScore, user, activityLog, setShowModal, getEntriesForPastWeek, setShowGoalProgress, recommendation}) {
     const [responseMessage, setResponseMessage] = useState("Welcome back");
@@ -68,14 +69,14 @@ function HomePageContent({userScore, user, activityLog, setShowModal, getEntries
                 </Col>
                 <Col xs={1}/>
             </Row>
-            <Row className="mt-2">
+            <Row className="mt-2 ms-3">
                 <Col xs={6}>
                     <RadarChart captions={goals}
                                 data={graphData}
                                 size={425}
                     />
                 </Col>
-                <Col xs={4} className="p-3 mt-5">
+                <Col xs={5} className="p-3 mt-5 ms-3">
                     <Row className="px-5 mt-4">
                         <Button className="my-1 px-2 primaryButton" variant="primary"
                                 onClick={() => setShowModal(true)}>
@@ -88,7 +89,7 @@ function HomePageContent({userScore, user, activityLog, setShowModal, getEntries
                         <h4>Recommended for you...</h4>
                         {user ?
                             <Recommendation recommendation={recommendation}/>
-                            : 'Calculating.. check back later!'
+                            : <div className="mx-1">Calculating.. check back later!</div>
                         }
                     </Row>
                 </Col>

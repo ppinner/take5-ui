@@ -13,7 +13,7 @@ function Recommendation({recommendation}) {
                     })}
                     </Card.Text>
                 </React.Fragment> :
-                <Card.Text>No recommendations yet</Card.Text>
+                <Card.Text>No recommendation yet</Card.Text>
             }
         </Card>
     );

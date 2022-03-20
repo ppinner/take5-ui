@@ -121,30 +121,28 @@ function Page() {
     }, []);
 
     useEffect(() => {
-        fetch(`http://localhost:8081/api/activityLog/user/${userId}`)
-            .then(res => res.json())
-            .then(result => {
-                setActivityLog(result);
-                if(user != null){
-                    setScore(calculateScore(user.focus, result, weekAgo, today));
-                }
-            })
-            .catch((error) => {
-                if(error.statusCode / 101 === 4) {
-                    alertService.error('Invalid input, please ensure all required fields are provided');
-                } else {
+        if(user != null) {
+            fetch(`http://localhost:8081/api/activityLog/user/${userId}`)
+                .then(res => res.json())
+                .then(result => {
+                    setActivityLog(result);
+                    if (user != null) {
+                        setScore(calculateScore(user.focus, result, weekAgo, today));
+                    }
+                })
+                .catch((error) => {
                     alertService.error("There was an error updating the activity log. We'll try again later!");
-                }
-            });
+                });
 
-        fetch(`http://localhost:1234/recommender/user/${userId}`)
-            .then(res => res.json())
-            .then(result => {
-                setRecommendation(result)
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+            fetch(`http://localhost:1234/recommender/user/${userId}`)
+                .then(res => res.json())
+                .then(result => {
+                    setRecommendation(result)
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
     }, [user]);
 
     useEffect(() => {
@@ -157,7 +155,7 @@ function Page() {
                     setEditedActivityLog(false)
                 })
                 .catch((error) => {
-                    if (error.statusCode / 100 === 4) {
+                    if (error.statusCode === 404) {
                         alertService.error('Invalid input, please ensure all required fields are provided');
                     } else {
                         alertService.error('There was an error updating the activity log. Please try again later.');
