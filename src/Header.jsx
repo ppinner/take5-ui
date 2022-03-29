@@ -7,6 +7,7 @@ import Dropdown from "react-bootstrap/Dropdown";
 import React from "react";
 import {alertService} from "./alert/alert-service";
 import './Page.css'
+import ButtonGroup from "react-bootstrap/ButtonGroup";
 
 function Header({showProfile, setShowProfile,setShowModal, setShowHistory, setShowGoalProgress, navigate}) {
     const toggleShowProfile = () => {
@@ -19,17 +20,16 @@ function Header({showProfile, setShowProfile,setShowModal, setShowHistory, setSh
     };
 
     return (
-            <Row className="App-header d-flex justify-content-xs-center" xs={1} md={2}>
+            <Row className="App-header d-flex justify-content-xs-center" xs={2} md={2}>
                 <Col className="">
-                    <Image src={logo} alt="Logo" className="logo"/>
+                    <Image src={logo} alt="Logo" className="header-logo"/>
                 </Col>
-                <Col className="flex-column mt-auto align-items-baseline mb-1">
-                    <Row xs={2} className="justify-content-end">
+                <ButtonGroup vertical className="mb-1 align-content-end">
                         <Button
-                                id="profileBtn"
-                                className="my-1 py-1 align-self-end"
-                                variant="outline-secondary"
-                                onClick={toggleShowProfile}
+                            id="profileBtn"
+                            className="py-1"
+                            variant="outline-secondary"
+                            onClick={toggleShowProfile}
                         >
                             {showProfile ? "Home" : "Profile"}
                         </Button>
@@ -44,8 +44,7 @@ function Header({showProfile, setShowProfile,setShowModal, setShowHistory, setSh
                             <Dropdown.Divider/>
                             <Dropdown.Item type="button" onClick={logout}>Logout</Dropdown.Item>
                         </DropdownButton>
-                    </Row>
-                </Col>
+                    </ButtonGroup>
             </Row>
     );
 }

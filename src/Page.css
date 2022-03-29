@@ -1,27 +1,40 @@
 #profileBtn {
     border-radius: 30px;
-    margin-top: 5px;
+    margin-top: 10px;
     border-color: #102336;
     color: #102336;
     max-width: 25%;
+    align-self: end;
+}
+
+@media (max-width: 500px) {
+    #profileBtn {
+        max-width: 50%;
+    }
+}
+
+@media (max-width: 765px) {
+    #profileBtn {
+        max-width: 40%;
+    }
 }
 
 #actions-dropdown {
     border-radius: 30px;
-    margin-top: 2px;
-    margin-bottom: 2px;
+    margin-top: 10px;
+    padding-right: 20px;
+    padding-left: 20px;
     border-color: #102336;
     color: #102336;
-    max-width: 75%;
 }
 
-#actions-dropdown.dropdown {
-    width: 100%;
+#root > div > div.App-header.d-flex.justify-content-xs-center.row.row-cols-md-2.row-cols-2 > div.mb-1.align-content-end.btn-group-vertical > div {
+    align-self: end;
 }
 
-.logo {
-    height: 90px !important;
-    width: 150px !important;
+.header-logo {
+    height: 90px;
+    width: 150px;
 }
 
 .App-header {
