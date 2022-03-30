@@ -72,7 +72,7 @@ function LoginModal({showLoginModal, setShowLoginModal, setLoggedIn}) {
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} className="mb-3 align-items-center" controlId="nameInput">
-                        <Form.Label column lg={4}>Name:</Form.Label>
+                        <Form.Label column lg={4}>Password:</Form.Label>
                         <Col>
                             <Form.Control type="password"
                                           onChange={(e) => setPassword(e.target.value)}

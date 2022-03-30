@@ -11,20 +11,24 @@ import Col from "react-bootstrap/Col";
 import {alertService} from "../alert/alert-service";
 
 function GoalProgressModal({show, setShowProgress, user}) {
+    const generateDatapoints = (data) => {
+        const datapoints=Object.entries(data)
+            .filter(scoreLog=>{
+                return moment(scoreLog[0])>=moment(user.focusStart)
+            }).map(log=>{
+                return{
+                    x:moment(log[0]),
+                    y:log[1][user.focus]
+                }
+            }).sort((a,b)=>{
+                return a.x-b.x;
+            });
+        return datapoints.sort()
+    };
+
     const getDataFromScoreHistory = () => {
         if(user.scores != null) {
-            const datapoints = Object.entries(user.scores)
-                .filter(scoreLog => {
-                    return moment(scoreLog[0]) >= moment(user.focusStart)
-                }).map(log => {
-                    return {
-                        x: moment(log[0]),
-                        y: log[1][user.focus]
-                    }
-                }).sort((a, b) => {
-                    return a.x - b.x;
-                });
-            return datapoints.sort()
+            return generateDatapoints(user.scores)
         }
         return []
     };
@@ -137,7 +141,11 @@ function GoalProgressModal({show, setShowProgress, user}) {
         if(regression['slope'] < 0){
             return `you need to log some more related activities for this goal to improve your ${goals[user.focus]}`
         } else {
-            return `you'll achieve this goal in ${getTimeframe(xTimestamp, graphData[0].x)} (${xTimestamp.format("MMM Do YYYY")})`
+            if(getTimeframe(xTimestamp, graphData[0].x) != null) {
+                return `you'll achieve this goal in ${getTimeframe(xTimestamp, graphData[0].x)} (${xTimestamp.format("MMM Do YYYY")})`
+            }  else {
+                return `you'll achieve this goal by ${xTimestamp.format("MMM Do YYYY")}`
+            }
         }
     };
 
@@ -146,7 +154,7 @@ function GoalProgressModal({show, setShowProgress, user}) {
             return `under one week!`
         } else if (date.diff(startDate, 'days') <= 14) {
             return `under two weeks!`
-        } else if (date.diff(startDate, 'months') <= 1) {
+        } else if (date.diff(startDate, 'months') < 1) {
             return `less than one month!`
         } else {
             return null

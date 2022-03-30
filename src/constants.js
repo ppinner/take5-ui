@@ -8,10 +8,10 @@ import React from "react";
 
 export const goals = {
     mindfulness: 'Mindfulness',
+    giving: 'Giving',
     connection: 'Connection',
     physicalActivity: 'Physical Activity',
     learning: 'Learning',
-    giving: 'Giving'
 };
 
 export const personalityTraits = {

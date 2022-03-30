@@ -10,7 +10,6 @@ import {goals, emoticons} from "../constants";
 import Rating from '@mui/material/Rating';
 import PropTypes from "prop-types";
 import {dateForPicker, dateFromDateString} from "../ProfilePageContent";
-import Alert from "bootstrap/js/src/alert";
 import {alertService} from "../alert/alert-service";
 
 function IconContainer(props) {

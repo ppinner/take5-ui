@@ -147,6 +147,17 @@ function Page() {
 
     useEffect(() => {
         if (editedActivityLog && user != null) {
+            fetch(`http://localhost:8081/api/users/${userId}`)
+                .then(res => res.json())
+                .then(result => setUser(result))
+                .catch((error) => {
+                    if(error.statusCode / 100 === 4) {
+                        alertService.error('Invalid input, please ensure all required fields are provided');
+                    } else {
+                        alertService.error('There was an error finding the user details. Please try again later.');
+                    }
+                });
+
             fetch(`http://localhost:8081/api/activityLog/user/${userId}`)
                 .then(res => res.json())
                 .then(result => {

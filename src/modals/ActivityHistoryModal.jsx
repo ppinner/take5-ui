@@ -47,7 +47,6 @@ function ActivityHistoryModal({show, setShowHistory, activityLog, setShowActivit
             .then(() => {
                 setUpdatedActivityLog(true);
                 alertService.success('Log was deleted successfully');
-
             })
             .catch(error => {
                 alertService.error('Could not delete activity log');

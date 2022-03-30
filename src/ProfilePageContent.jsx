@@ -181,15 +181,15 @@ function ProfilePageContent({user, setUser, activityLog, activities}) {
     });
 
     return (
-        <Container className="Profile mt-3">
+        <Container className="Profile my-3">
             <Row className="title">
                 <Col>
                     <h1>Your Profile</h1>
                 </Col>
             </Row>
-            <Row className="d-flex" sm={1} md={2} lg={2}>
-                <Col className="mt-2">
-                    <Form className="personalInfo">
+            <Row className="" xs={1} lg={2}>
+                <Col className="mt-2" >
+                    <Form className="personalInfo" >
                         <Form.Group as={Row} className="mb-2 align-items-center" controlId="nameInput">
                             <Form.Label column lg={4}>Name:</Form.Label>
                             <Col>
@@ -289,7 +289,7 @@ function ProfilePageContent({user, setUser, activityLog, activities}) {
                             onClick={() => setTakePersonalityTest(true)}>
                         {user.personality ? "Retake Personality Test" : "Take Personality Test"}</Button>
                 </Col>
-                <Col className="mb-3 d-flex align-items-center">
+                <Col className="mb-3 align-items-center">
                     <Card className="activitySummary">
                         <Card.Title className="mx-2 mt-2">Your Activity Summary</Card.Title>
                         <Card.Body className="summaryGrid">

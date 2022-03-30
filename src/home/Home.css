@@ -26,6 +26,7 @@
 .graph {
     display: inline-flex;
     justify-self: center;
+    padding-left: 20px;
 }
 
 .primaryButton {

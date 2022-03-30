@@ -18,9 +18,9 @@ function SignupModal({showSignupModal, setShowSignupModal}) {
     const [password2, setPassword2] = useState(null);
 
     const handleClose = () => {
-        clearModal();
         alertService.clear();
         setShowSignupModal(false);
+        clearModal();
     };
 
     const checkPasswords = (password, password2) => {
@@ -109,6 +109,7 @@ function SignupModal({showSignupModal, setShowSignupModal}) {
                         })
                         .catch(error=> {
                             rollbackUserChanges(account.userId);
+                            alertService.error('Could not create user - username may already be in use');
                         });
                 })
                 .catch(error => {

@@ -4,13 +4,20 @@ import Button from 'react-bootstrap/Button';
 import {Col, Container, Row} from 'react-bootstrap';
 import RadarChart from 'react-svg-radar-chart';
 import 'react-svg-radar-chart/build/css/index.css';
-// import './radarChart.css';
 import {goals} from "../constants";
 import Recommendation from "../Recommendation";
 
 function HomePageContent({userScore, user, activityLog, setShowModal, getEntriesForPastWeek, setShowGoalProgress, recommendation}) {
     const [responseMessage, setResponseMessage] = useState("Welcome back");
     const [graphData, setGraphData] = useState([]);
+
+    const graphOptions = {
+        captionProps: () => ({
+            textAnchor: 'middle',
+            fontSize: 12,
+            fontFamily: 'sans-serif'
+        }),
+    };
 
     useEffect(() => {
         const responseMessage = (() => {
@@ -33,10 +40,10 @@ function HomePageContent({userScore, user, activityLog, setShowModal, getEntries
                 {
                     data: {
                         mindfulness: userScore.mindfulness,
-                        connection: userScore.connection,
+                        giving: userScore.giving,
                         physicalActivity: userScore.physicalActivity,
                         learning: userScore.learning,
-                        giving: userScore.giving
+                        connection: userScore.connection
                     },
                     meta: {
                         color: '#5D88BB',
@@ -70,10 +77,11 @@ function HomePageContent({userScore, user, activityLog, setShowModal, getEntries
                 <Col xs={1}/>
             </Row>
             <Row className="my-2 d-flex" xs={1} md={1} sm={1} lg={2}>
-                <Col className="px-5 flex-grow-1 justify-content-center">
+                <Col className="px-5 d-flex justify-content-center">
                     <RadarChart className="graph" captions={goals}
                                 data={graphData}
-                                size={425}
+                                size={450}
+                                options={graphOptions}
                     />
                 </Col>
                 <Col className="py-3 px-5 align-self-center">
