@@ -102,10 +102,11 @@ function ProfilePageContent({user, setUser, activityLog, activities}) {
             if (Object.keys(activityCounts).length > 0 && activities.length > 0) {
                 setMostPopularActivity(() => {
                     try {
-                        const mostPopularId = Object.keys(activityCounts).reduce((max, key) => {
-                            return ((max === undefined) || activityCounts[key] > activityCounts[max]) ? +key : max
+                        const mostPopularId = Object.keys(activityCounts).filter(x => {
+                            return activityCounts[x] == Math.max.apply(null,
+                                Object.values(activityCounts));
                         });
-                        return (activities.find((activity) => activity.id === mostPopularId).name) ? (activities.find((activity) => activity.id === mostPopularId).name) : null;
+                        return (activities.find((activity) => activity.id === mostPopularId[0]).name) ? (activities.find((activity) => activity.id === mostPopularId[0]).name) : null;
                     } catch {
                         return null
                     }
@@ -113,10 +114,11 @@ function ProfilePageContent({user, setUser, activityLog, activities}) {
 
                 setMostPopularGoal(() => {
                     try {
-                        const mostPopularGoal = Object.keys(goalCounts).reduce((max, key) => {
-                            return (max === undefined || goalCounts[key] > goalCounts[max]) ? +key : max
+                        const mostPopularGoal = Object.keys(goalCounts).filter(x => {
+                            return goalCounts[x] == Math.max.apply(null,
+                                Object.values(goalCounts));
                         });
-                        return goals[mostPopularGoal];
+                        return goals[mostPopularGoal[0]];
                     } catch {
                         return null
                     }
@@ -129,10 +131,11 @@ function ProfilePageContent({user, setUser, activityLog, activities}) {
                                 goalCounts[goal] = 0;
                         });
 
-                        const leastPopularGoal = Object.keys(goals).reduce((min, key) => {
-                            return (min === undefined || goalCounts[key] < goalCounts[min]) ? key : min
+                        const leastPopularGoal = Object.keys(goals).filter(x => {
+                            return goalCounts[x] == Math.min.apply(null,
+                                Object.values(goalCounts));
                         });
-                        return goals[leastPopularGoal];
+                        return goals[leastPopularGoal[0]];
                     } catch {
                         return null
                     }
@@ -157,8 +160,9 @@ function ProfilePageContent({user, setUser, activityLog, activities}) {
                             diffs[goal] = Math.abs(user.scores[dateFromDateString(new Date())][goal] - lastMonthScores[1][goal])
                         });
 
-                        const mostImprovedGoal = Object.keys(goals).reduce((max, key) => {
-                            return (max === undefined || diffs[key] > diffs[max]) ? +key : max
+                        const mostImprovedGoal = Object.keys(goals).filter(x => {
+                            return diffs[x] == Math.max.apply(null,
+                                Object.values(diffs));
                         });
                         return goals[mostImprovedGoal]
                     } catch (e) {
