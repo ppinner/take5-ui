@@ -82,7 +82,6 @@ function Page() {
     const [showLogActivityModal, setShowLogActivityModal] = useState(false);
     const [showHistory, setShowHistory] = useState(false);
     const [editedActivityLog, setEditedActivityLog] = useState(false);
-    const [isLoaded, setIsLoaded] = useState(false); //TODO - implement loading icon
     const [user, setUser] = useState(null);
     const [activities, setActivities] = useState(null);
     const [showCreateActivityModal, setCreateActivityModal] = useState(false);

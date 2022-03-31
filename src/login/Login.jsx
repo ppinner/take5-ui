@@ -15,13 +15,13 @@ function Login({setLoggedIn}) {
     const [showSignupModal, setShowSignupModal] = useState(false);
 
     const showLogin = (bool) => {
+        alertService.clear();
         setShowLoginModal(bool);
-        alertService.clear()
     };
 
     const showSignup = (bool) => {
+        alertService.clear();
         setShowSignupModal(bool);
-        alertService.clear()
     };
 
     return (

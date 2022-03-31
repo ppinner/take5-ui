@@ -34,10 +34,8 @@ function Alert({id, fade}) {
                     // add alert to array
                     setAlerts(alerts => ([...alerts, alert]));
 
-                    // auto close alert if required
-                    if (alert.autoClose) {
-                        setTimeout(() => removeAlert(alert), 3000);
-                    }
+                    // auto close alert
+                    setTimeout(() => removeAlert(alert), 3000);
                 }
             });
 
