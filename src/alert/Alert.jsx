@@ -3,6 +3,15 @@ import React, {useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import {alertService, AlertType} from "./alert-service";
 
+/*
+    This file was copied from from a public GitHub library:
+    https://github.com/cornflourblue/react-hooks-bootstrap-alerts
+
+    Found via a blog post by Jason Watmore:
+    https://jasonwatmore.com/post/2020/04/11/react-hooks-bootstrap-alert-notifications
+
+    Some adaptions were made to simplify it for the application context.
+ */
 const propTypes = {
     id: PropTypes.string,
     fade: PropTypes.bool

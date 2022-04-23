@@ -80,6 +80,10 @@ function PersonalityTestModal({takePersonalityTest, setTakePersonalityTest, user
         },
     ];
 
+    /*
+        The NoTrackSlider component was found in a StackOverflow post answer by Ryan Cogswell
+        https://stackoverflow.com/questions/57402844/material-ui-slider-with-discreet-values-only/57416340
+     */
     const NoTrackSlider = withStyles({
         track: {
             display: "none"
@@ -89,6 +93,10 @@ function PersonalityTestModal({takePersonalityTest, setTakePersonalityTest, user
         }
     })(Slider);
 
+    /*
+        This scoring formula is the once described in the Test description document from personality-testing.info
+        courtesy of ipip.ori.org
+     */
     const calculatePersonalityScores = () => {
         let result =
             {

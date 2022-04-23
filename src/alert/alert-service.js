@@ -1,6 +1,12 @@
 import { Subject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
+/*
+    This file was copied from from a public GitHub library:
+    https://github.com/cornflourblue/react-hooks-bootstrap-alerts
+
+    Some adaptions were made to simplify it for the application context.
+ */
 const alertSubject = new Subject();
 const defaultId = 'default-alert';
 

@@ -1,6 +1,17 @@
-# Getting Started with Create React Login
+This codebase is the UI project for Poppy Pinner's Undergraduate Dissertation Project System: Take5
+
+It can be run locally via the commands below. Will also require running the backend project on the same machine
+and access to the MongoDB cluster.
+
+Author Details:
+Poppy Pinner (Student Num: 180863156)
+Dept of Electronic Engineering and Computer Science
+Queen Mary, University of London
+
+# Getting Started with Take5
 
 This project was bootstrapped with [Create React Login](https://github.com/facebook/create-react-app).
+
 
 ## Available Scripts
 

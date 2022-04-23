@@ -35,6 +35,10 @@ export const personalityTraitDesc = {
         'pursuits. High scorers may daydream a lot. Low scorers may be very down to earth.'
 };
 
+/*
+    From the Material UI documentation for Slider element with custom icons:
+    https://mui.com/material-ui/react-rating/#radio-group
+ */
 export const emoticons = {
     0: {
         icon: <DoDisturbAltOutlinedIcon/>,

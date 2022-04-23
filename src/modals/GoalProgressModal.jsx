@@ -101,6 +101,10 @@ function GoalProgressModal({show, setShowProgress, user}) {
         ]
     };
 
+    /*
+        This formula was taken from DracoBlue.net Linear least squares article:
+        https://dracoblue.net/dev/linear-least-squares-in-javascript/
+     */
     function linearRegression(y, x) {
         let lr = {};
         let n = y.length;

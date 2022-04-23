@@ -1,3 +1,6 @@
+/*
+        This set of questions was taken from personality-testing.info courtesy of ipip.ori.org
+ */
 export const BigFiveQuestions =
     [
         "Am the life of the party",
